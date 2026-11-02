@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVE-Rx PHG | Sistem Operasi Pertukaran</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand-navy: #0B2447; --brand-blue: #19376D; --brand-gold: #D4AF37; 
+            --brand-gold-light: #F9F4E5; --brand-silver: #cbd5e1; --surface: #ffffff; 
+            --bg-page: #F3F4F6; --text-main: #1F2937; --text-muted: #6B7280; --border: #E5E7EB; 
+            --error-red: #EF4444; --success-green: #10B981;
+        }
+        
+        body { font-family: 'Poppins', sans-serif; color: var(--text-main); margin: 0; padding: 0; background: var(--bg-page); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
+        
+        /* Interactive Nav */
+        .app-nav { background: var(--surface); border-bottom: 2px solid var(--border); display: flex; justify-content: center; padding: 0 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 18px 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative; }
+        .nav-btn:hover { color: var(--brand-blue); }
+        .nav-btn.active { color: var(--brand-navy); }
+        .nav-btn::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--brand-gold); transition: width 0.3s ease; border-radius: 3px 3px 0 0; }
+        .nav-btn.active::after { width: 100%; }
+
+        /* Premium Header */
+        .header-banner { 
+            text-align: center; padding: 40px 20px; color: white; position: relative;
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-blue) 100%), 
+                        url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0l20 20-20 20L0 20z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-blend-mode: overlay; box-shadow: 0 10px 30px rgba(11, 36, 71, 0.2);
+            border-bottom: 4px solid var(--brand-gold); margin-bottom: 40px;
+        }
+        .jata-negara { height: 75px; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); animation: fadeInDown 0.8s ease; }
+        .header-banner h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: 1px; animation: fadeInUp 0.8s ease; text-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+        .header-banner p { margin: 8px 0; color: #E5E7EB; font-weight: 300; font-size: 1.05rem; animation: fadeInUp 1s ease; }
+
+        .container { max-width: 1100px; margin: 0 auto 50px auto; padding: 0 15px; flex-grow: 1; width: 100%; box-sizing: border-box;}
+        
+        .card { 
+            background: var(--surface); border-radius: 12px; padding: 35px; margin-bottom: 30px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.4); 
+            border-top: 5px solid var(--brand-blue); transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        .card-title { font-size: 1.25rem; color: var(--brand-navy); font-weight: 700; margin-bottom: 20px; border-bottom: 2px dashed var(--border); padding-bottom: 10px;}
+        
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Form Inputs */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        
+        .form-group { margin-bottom: 20px; }
+        label { font-weight: 600; display: block; margin-bottom: 8px; color: var(--brand-navy); font-size: 0.95rem; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; background: #F9FAFB; transition: 0.3s; }
+        input:focus, select:focus { outline: none; border-color: var(--brand-gold); background: var(--surface); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); }
+        
+        /* Tables inside Scoring Cards */
+        .table-responsive { overflow-x: auto; margin-bottom: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .ref-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--surface); min-width: 450px; }
+        .ref-table th, .ref-table td { padding: 12px 15px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+        .ref-table th { background: var(--brand-navy); color: var(--brand-gold); font-weight: 600; text-align: left; }
+        .ref-table td:first-child { font-weight: 700; text-align: center; width: 45px; background: var(--brand-gold-light); color: var(--brand-navy); }
+
+        /* Likert Scale */
+        .likert-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 15px 0 10px 0; }
+        .likert-option { position: relative; cursor: pointer; }
+        .likert-option input[type="radio"] { position: absolute; opacity: 0; }
+        .likert-tile { background: var(--surface); border: 2px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; transition: all 0.2s; }
+        .likert-tile:hover { border-color: var(--brand-gold); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212,175,55,0.15); }
+        .likert-option input[type="radio"]:checked + .likert-tile { background: linear-gradient(135deg, var(--brand-navy), var(--brand-blue)); border-color: var(--brand-gold); transform: scale(1.03); box-shadow: 0 8px 20px rgba(11,36,71,0.3); }
+        .likert-option input[type="radio"]:checked + .likert-tile * { color: var(--surface) !important; }
+        .likert-num { font-size: 1.4rem; font-weight: 700; color: var(--brand-navy); }
+        
+        /* Modern Button */
+        .submit-btn { background: linear-gradient(135deg, var(--brand-navy), var(--brand-blue)); color: var(--brand-gold); border: none; padding: 18px; font-size: 1.15rem; font-weight: 700; border-radius: 8px; cursor: pointer; width: 100%; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 20px rgba(11,36,71,0.25); position: relative; overflow: hidden; }
+        .submit-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); transform: skewX(-20deg); transition: 0.5s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(11,36,71,0.35); }
+        .submit-btn:hover::after { left: 120%; }
+
+        /* Dashboard Table */
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; background: var(--surface); padding: 15px; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; }
+        .data-table th, .data-table td { padding: 12px 15px; border-bottom: 1px solid var(--border); text-align: left; }
+        .data-table th { background: var(--brand-navy); color: var(--brand-gold); font-weight: 600; white-space: nowrap; }
+        .data-table tbody tr:hover { background: #F9FAFB; }
+        .status-select { padding: 6px; border-radius: 6px; border: 1px solid var(--border); font-weight: 600; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: 0.2s;}
+        
+        .status-proses { background: #FEF3C7; color: #92400E; }
+        .status-terima { background: #D1FAE5; color: #065F46; }
+        .status-tolak { background: #FEE2E2; color: #991B1B; }
+
+        /* Views (Tabs & 404) */
+        .view-section { display: none; animation: fadeInUp 0.5s ease; }
+        .view-section.active { display: block; }
+        
+        /* 404 Error Page Styling */
+        .error-container { text-align: center; padding: 60px 20px; }
+        .error-code { font-size: 6rem; font-weight: 700; color: var(--brand-navy); line-height: 1; margin-bottom: 10px; text-shadow: 4px 4px 0px var(--brand-gold-light); }
+        .error-msg { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 30px; }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 16px 24px; border-radius: 8px; color: white; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); min-width: 250px; }
+        .toast.success { background: var(--success-green); }
+        .toast.error { background: var(--error-red); }
+        .toast.info { background: var(--brand-navy); }
+
+        /* Footer & Modals */
+        .footer { background: var(--brand-navy); color: var(--brand-silver); text-align: center; padding: 40px 15px; font-size: 0.9rem; border-top: 4px solid var(--brand-gold); margin-top: auto; }
+        .footer h2 { color: var(--brand-gold); margin-bottom: 5px; font-size: 1.4rem; }
+        .footer-links { margin: 15px 0; }
+        .footer-links a { color: var(--surface); text-decoration: none; margin: 0 12px; font-weight: 500; cursor: pointer; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--brand-gold); }
+        
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(11,36,71,0.6); backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--surface); margin: 5% auto; padding: 40px; width: 85%; max-width: 700px; border-radius: 12px; border-top: 6px solid var(--brand-gold); box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: fadeInUp 0.3s ease; position: relative; }
+        .close { color: var(--text-muted); position: absolute; right: 20px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close:hover { color: var(--error-red); }
+    </style>
+</head>
+<body>
+
+<nav class="app-nav">
+    <button class="nav-btn active" onclick="navigate('#borang')">Borang Permohonan</button>
+    <button class="nav-btn" onclick="navigate('#admin')">Papan Pemuka</button>
+</nav>
+
+<div class="header-banner">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Coat_of_arms_of_Malaysia.svg" alt="Jata Negara" class="jata-negara">
+    <h1>MOVE-Rx PHG</h1>
+    <p>Sistem Pengurusan & Penilaian Pertukaran Anggota Farmasi</p>
+</div>
+
+<div class="container">
+    <!-- FORM SECTION -->
+    <div id="borangView" class="view-section active">
+        <form id="operasiForm">
+            <div class="card">
+                <div class="card-title">1. Maklumat Pegawai Yang Dinilai</div>
+                <div class="form-group">
+                    <label>Nama Penuh</label>
+                    <input type="text" id="nama" required placeholder="Cth: Ahmad bin Ali">
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>No. Kad Pengenalan</label>
+                        <input type="text" id="kp" required placeholder="Tanpa sengkang (-) Cth: 901201065543">
+                    </div>
+                    <div class="form-group">
+                        <label>Gred Jawatan</label>
+                        <select id="gred" required>
+                            <option value="">-- Sila Pilih --</option>
+                            <option value="UF41">UF41</option>
+                            <option value="UF44">UF44</option>
+                            <option value="UF48">UF48</option>
+                            <option value="UF52">UF52</option>
+                            <option value="UF54">UF54</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">2. Maklumat Penempatan</div>
+                <div class="form-grid">
+                    <!-- Semasa -->
+                    <div style="background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+                        <label style="color:var(--brand-blue); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:15px; font-weight:700;">FASILITI SEMASA</label>
+                        <div class="form-group">
+                            <label>PTj Semasa</label>
+                            <select id="ptjSemasa" required onchange="handleFasiliti('Semasa')">
+                                <option value="">-- Sila Pilih PTj --</option>
+                                <option value="Bahagian Perkhidmatan Farmasi, JKNP">Bahagian Perkhidmatan Farmasi, JKNP</option>
+                                <optgroup label="Hospital">
+                                    <option value="H. Tengku Ampuan Afzan, Kuantan">HTAA Kuantan</option>
+                                    <option value="H. Sultan Haji Ahmad Shah, Temerloh">HOSHAS Temerloh</option>
+                                    <option value="H. Kuala Lipis">H. Kuala Lipis</option>
+                                    <option value="H. Bentong">H. Bentong</option>
+                                    <option value="H. Raub">H. Raub</option>
+                                    <option value="H. Jerantut">H. Jerantut</option>
+                                    <option value="H. Jengka">H. Jengka</option>
+                                    <option value="H. Pekan">H. Pekan</option>
+                                    <option value="H. Muadzam Shah">H. Muadzam Shah</option>
+                                    <option value="H. Sultanah Hajjah Kalsom, Cameron">H. Sultanah Hajjah Kalsom</option>
+                                    <option value="H. Rompin">H. Rompin</option>
+                                    <option value="H. Bera">H. Bera</option>
+                                </optgroup>
+                                <optgroup label="Pejabat Kesihatan Daerah (PKD)">
+                                    <option value="PKD Kuantan">PKD Kuantan</option>
+                                    <option value="PKD Temerloh">PKD Temerloh</option>
+                                    <option value="PKD Bentong">PKD Bentong</option>
+                                    <option value="PKD Bera">PKD Bera</option>
+                                    <option value="PKD Jerantut">PKD Jerantut</option>
+                                    <option value="PKD Lipis">PKD Lipis</option>
+                                    <option value="PKD Maran">PKD Maran</option>
+                                    <option value="PKD Pekan">PKD Pekan</option>
+                                    <option value="PKD Raub">PKD Raub</option>
+                                    <option value="PKD Rompin">PKD Rompin</option>
+                                    <option value="PKD Cameron Highlands">PKD Cameron</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="wrap_fasilitiSemasa" style="display:none;">
+                            <label id="lbl_fasilitiSemasa">Spesifikasi Fasiliti</label>
+                            <div id="container_fasilitiSemasa"></div>
+                        </div>
+                    </div>
+
+                    <!-- Diminta -->
+                    <div style="background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+                        <label style="color:var(--brand-blue); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:15px; font-weight:700;">FASILITI DIMINTA</label>
+                        <div class="form-group">
+                            <label>PTj Diminta</label>
+                            <select id="ptjDiminta" required onchange="handleFasiliti('Diminta')">
+                                <option value="">-- Sila Pilih PTj --</option>
+                                <option value="Bahagian Perkhidmatan Farmasi, JKNP">Bahagian Perkhidmatan Farmasi, JKNP</option>
+                                <optgroup label="Hospital">
+                                    <option value="H. Tengku Ampuan Afzan, Kuantan">HTAA Kuantan</option>
+                                    <option value="H. Sultan Haji Ahmad Shah, Temerloh">HOSHAS Temerloh</option>
+                                    <option value="H. Kuala Lipis">H. Kuala Lipis</option>
+                                    <option value="H. Bentong">H. Bentong</option>
+                                    <option value="H. Raub">H. Raub</option>
+                                    <option value="H. Jerantut">H. Jerantut</option>
+                                    <option value="H. Jengka">H. Jengka</option>
+                                    <option value="H. Pekan">H. Pekan</option>
+                                    <option value="H. Muadzam Shah">H. Muadzam Shah</option>
+                                    <option value="H. Sultanah Hajjah Kalsom, Cameron">H. Sultanah Hajjah Kalsom</option>
+                                    <option value="H. Rompin">H. Rompin</option>
+                                    <option value="H. Bera">H. Bera</option>
+                                </optgroup>
+                                <optgroup label="Pejabat Kesihatan Daerah (PKD)">
+                                    <option value="PKD Kuantan">PKD Kuantan</option>
+                                    <option value="PKD Temerloh">PKD Temerloh</option>
+                                    <option value="PKD Bentong">PKD Bentong</option>
+                                    <option value="PKD Bera">PKD Bera</option>
+                                    <option value="PKD Jerantut">PKD Jerantut</option>
+                                    <option value="PKD Lipis">PKD Lipis</option>
+                                    <option value="PKD Maran">PKD Maran</option>
+                                    <option value="PKD Pekan">PKD Pekan</option>
+                                    <option value="PKD Raub">PKD Raub</option>
+                                    <option value="PKD Rompin">PKD Rompin</option>
+                                    <option value="PKD Cameron Highlands">PKD Cameron</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="wrap_fasilitiDiminta" style="display:none;">
+                            <label id="lbl_fasilitiDiminta">Spesifikasi Fasiliti</label>
+                            <div id="container_fasilitiDiminta"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoring Parameters -->
+            <div id="scoringContainer"></div>
+
+            <button type="submit" class="submit-btn" id="btnSubmit">Hantar & Rekod Skor Penilaian</button>
+        </form>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminView" class="view-section">
+        <div class="card" id="adminLogin" style="max-width: 500px; margin: 0 auto; text-align: center; padding: 50px 20px;">
+            <div class="card-title" style="justify-content: center; border:none; padding:0;">Akses Keselamatan Pengurusan</div>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Sila sahkan identiti pentadbir untuk menguruskan rekod pertukaran.</p>
+            <input type="password" id="adminPwd" placeholder="Kata Laluan" style="max-width: 300px; margin: 0 auto 20px auto; display: block; text-align: center;">
+            <button type="button" class="submit-btn" style="max-width: 300px;" onclick="checkAdmin()">Log Masuk Dashboard</button>
+        </div>
+
+        <div id="adminDashboard" style="display: none;">
+            <div class="card">
+                <div class="card-title">Senarai Pemohon Pertukaran Aktif</div>
+                
+                <div class="filter-bar">
+                    <select id="filterTahun" onchange="filterTable()" style="flex: 1; min-width:150px;">
+                        <option value="ALL">Semua Tahun</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                    <select id="filterPTj" onchange="filterTable()" style="flex: 1; min-width:150px;">
+                        <option value="ALL">Semua Kategori PTj</option>
+                        <option value="Hospital">Hospital Sahaja</option>
+                        <option value="PKD">PKD Sahaja</option>
+                        <option value="Bahagian">Ibu Pejabat (BPF)</option>
+                    </select>
+                    <div style="background:var(--brand-gold-light); padding:10px 20px; border-radius:8px; font-weight:700; color:var(--brand-navy); border: 1px solid var(--brand-gold);">
+                        Jumlah Rekod: <span id="totalPermohonan" style="font-size:1.2rem;">0</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>ID Permohonan</th>
+                                <th>Tarikh</th>
+                                <th>Pemohon</th>
+                                <th>Fasiliti Semasa</th>
+                                <th>Fasiliti Diminta</th>
+                                <th style="text-align:center;">Skor</th>
+                                <th>Status Kemaskini</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data injected here via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 404 NOT FOUND VIEW -->
+    <div id="error404View" class="view-section">
+        <div class="error-container">
+            <div class="error-code">404</div>
+            <div class="error-msg">Alamak! Halaman atau pautan yang anda cari tidak wujud.</div>
+            <button class="submit-btn" style="max-width: 300px;" onclick="navigate('#borang')">Kembali ke Borang Utama</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <h2>MOVE-Rx PHG</h2>
+    <p style="color: var(--brand-gold-light);">Sistem Pemarkahan Objektif Pertukaran Anggota Farmasi</p>
+    <div class="footer-links">
+        <a onclick="openModal('modalProjek')">Mengenai Sistem</a> • 
+        <a onclick="openModal('modalPrivasi')">Dasar Privasi</a> • 
+        <a onclick="openModal('modalTerma')">Terma Penggunaan</a>
+    </div>
+    <p style="margin-top: 20px; font-size:0.8rem; color: #9CA3AF;">© 2026 MOVE-Rx PHG. Hak Cipta Terpelihara.<br>Dibangunkan oleh Muhammad Hafizul Aniq bin Khairul Hafidz, RPh. 25588</p>
+</footer>
+
+<!-- MODALS -->
+<div id="modalProjek" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('modalProjek')">&times;</span>
+    <h2 style="color:var(--brand-navy); border-bottom: 2px solid var(--brand-gold); padding-bottom: 10px;">Mengenai Sistem Operasi</h2>
+    <p style="line-height: 1.7;">Ini merupakan fasa perlaksanaan (Operasi) bagi instrumen MOVE-Rx PHG setelah melepasi fasa pengesahan e-Delphi (NMRR ID-26-03968-MPU). Sistem ini membenarkan Ketua Jabatan Farmasi (KJF) dan Pegawai Farmasi Kesihatan (PFK) merekodkan skor objektif pertukaran bagi setiap permohonan ke dalam pangkalan data berpusat Jabatan Kesihatan Negeri Pahang.</p>
+  </div>
+</div>
+
+<div id="modalPrivasi" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('modalPrivasi')">&times;</span>
+    <h2 style="color:var(--brand-navy); border-bottom: 2px solid var(--brand-gold); padding-bottom: 10px;">Dasar Privasi & Keselamatan</h2>
+    <p style="line-height: 1.7;">Semua maklumat pegawai (termasuk No. KP dan data penempatan) dikodkan dan disimpan dalam pelayan yang dilindungi kata laluan. Data ini hanya boleh diakses oleh pentadbir peringkat negeri bagi tujuan penyelarasan mesyuarat pertukaran rasmi dan tidak akan didedahkan kepada umum.</p>
+  </div>
+</div>
+
+<div id="modalTerma" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('modalTerma')">&times;</span>
+    <h2 style="color:var(--brand-navy); border-bottom: 2px solid var(--brand-gold); padding-bottom: 10px;">Terma Penggunaan</h2>
+    <p style="line-height: 1.7;">Platform ini adalah aset pengurusan rasmi. Pengguna (KJF/PFK/KC) bertanggungjawab memastikan skor yang dimasukkan adalah berdasarkan pemerhatian dan semakan fizikal dokumen sokongan pemohon. Sebarang penyalahgunaan atau pemalsuan data pemarkahan boleh dikenakan tindakan pentadbiran.</p>
+  </div>
+</div>
+
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzw2jFzKF-aRmEDxt-5J4jF39_9RbJlqXP0EdzLdosmuBJslOi6eeNaW1zOjqExvY66fw/exec';
+
+    // Toast Notification System (Replaces Alert)
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        // Icon logic based on type
+        let icon = 'ℹ️';
+        if (type === 'success') icon = '✅';
+        if (type === 'error') icon = '⚠️';
+
+        toast.innerHTML = `<span style="font-size:1.2rem;">${icon}</span> <div>${message}</div>`;
+        container.appendChild(toast);
+        
+        // Auto remove after 4.5 seconds
+        setTimeout(() => {
+            toast.style.animation = 'slideInRight 0.4s reverse forwards';
+            setTimeout(() => toast.remove(), 400);
+        }, 4500);
+    }
+
+    // SPA Router (Hash-based Navigation)
+    function navigate(hash) {
+        window.location.hash = hash;
+    }
+
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('load', () => {
+        if(!window.location.hash) window.location.hash = '#borang';
+        handleRoute();
+    });
+
+    function handleRoute() {
+        const hash = window.location.hash;
+        
+        // Reset all views and nav buttons
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+        if (hash === '#borang' || hash === '') {
+            document.getElementById('borangView').classList.add('active');
+            document.querySelector(`button[onclick="navigate('#borang')"]`).classList.add('active');
+        } else if (hash === '#admin') {
+            document.getElementById('adminView').classList.add('active');
+            document.querySelector(`button[onclick="navigate('#admin')"]`).classList.add('active');
+        } else {
+            // 404 Trigger
+            document.getElementById('error404View').classList.add('active');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Cascading Dropdown Logic
+    function handleFasiliti(type) {
+        const ptjVal = document.getElementById(`ptj${type}`).value;
+        const wrap = document.getElementById(`wrap_fasiliti${type}`);
+        const container = document.getElementById(`container_fasiliti${type}`);
+        const lbl = document.getElementById(`lbl_fasiliti${type}`);
+        
+        container.innerHTML = ''; 
+
+        if(ptjVal === 'Bahagian Perkhidmatan Farmasi, JKNP') {
+            wrap.style.display = 'block';
+            lbl.innerText = 'Sila Pilih Cawangan';
+            container.innerHTML = `
+                <select id="val_fasiliti${type}" required>
+                    <option value="">-- Pilih Cawangan --</option>
+                    <option value="Cawangan Pengurusan Farmasi">Cawangan Pengurusan Farmasi</option>
+                    <option value="Cawangan Amalan dan Perkembangan Farmasi">Cawangan Amalan dan Perkembangan Farmasi</option>
+                    <option value="Cawangan Penguatkuasaan Farmasi">Cawangan Penguatkuasaan Farmasi</option>
+                </select>`;
+        } 
+        else if(ptjVal.includes('PKD')) {
+            wrap.style.display = 'block';
+            lbl.innerText = 'Nama Klinik Kesihatan (KK)';
+            container.innerHTML = `<input type="text" id="val_fasiliti${type}" required placeholder="Cth: KK Beserah">`;
+        } 
+        else {
+            wrap.style.display = 'none';
+            container.innerHTML = `<input type="hidden" id="val_fasiliti${type}" value="${ptjVal}">`;
+        }
+    }
+
+    // Rubric Tables Integration (Restored exactly as requested)
+    const paramData = [
+        { id: 'p1', title: 'P1: Alasan Pertukaran', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / isu kesihatan</td></tr>` },
+        { id: 'p2', title: 'P2: Tempoh di Fasiliti Semasa', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` },
+        { id: 'p3', title: 'P3: Beban Logistik & Jarak', ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Berbukit/Pedalaman</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>Melebihi 300km / Antara negeri</td><td>151km - 300km</td></tr>` },
+        { id: 'p4', title: 'P4: Tanggungan Keluarga (Anak)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Seorang anak</td></tr><tr><td>3</td><td>2 orang anak</td></tr><tr><td>4</td><td>3 orang anak</td></tr><tr><td>5</td><td>≥ 4 orang anak</td></tr>` },
+        { id: 'p5', title: 'P5: Umur Anak', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Mempunyai anak di sekolah menengah</td></tr><tr><td>3</td><td>Pelbagai peringkat umur (sekolah menengah & rendah)</td></tr><tr><td>4</td><td>Mempunyai anak kecil (bayi/pra-sekolah/sekolah rendah)</td></tr><tr><td>5</td><td>Mempunyai anak berkeperluan khas (OKU)</td></tr>` },
+        { id: 'p6', title: 'P6: Tanggungan (Pasangan / Ibu / Bapa)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada keperluan penjagaan / Tidak berkenaan</td></tr><tr><td>2</td><td>Menjaga pasangan/ibu/bapa (Sihat tetapi perlukan pemantauan)</td></tr><tr><td>3</td><td>Menjaga pasangan/ibu/bapa dengan penyakit kronik terkawal</td></tr><tr><td>4</td><td>Menjaga pasangan/ibu/bapa uzur (Pergerakan terhad)</td></tr><tr><td>5</td><td>Menjaga pasangan/ibu/bapa uzur (Terlantar/ kritikal)</td></tr>` },
+        { id: 'p7', title: 'P7: Implikasi Tanpa Pengganti', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Menyebabkan keperluan kritikal untuk mobilisasi dan menjejaskan operasi</td></tr><tr><td>3</td><td>Memerlukan pelarasan/penggantian tugas secara berkala</td></tr><tr><td>5</td><td>Beban kerja semasa boleh diserap oleh anggota sedia ada</td></tr>` },
+        { id: 'p8', title: 'P8: Implikasi Kelangsungan Perkhidmatan', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Terpaksa menutup beberapa perkhidmatan (e.g. MTAC/klinikal)</td></tr><tr><td>3</td><td>Skop perkhidmatan terpaksa dihadkan / Tugas pentadbiran tertangguh</td></tr><tr><td>5</td><td>Perkhidmatan teras boleh diteruskan seperti biasa</td></tr>` },
+        { id: 'p9', title: 'P9: Perakuan Ketua Jabatan', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tidak disokong atas kepentingan perkhidmatan</td></tr><tr><td>3</td><td>Disokong dengan pengganti dihantar serentak</td></tr><tr><td>4</td><td>Disokong dengan pengganti dihantar kemudian</td></tr><tr><td>5</td><td>Disokong tanpa keperluan pengganti</td></tr>` }
+    ];
+
+    const scoreContainer = document.getElementById('scoringContainer');
+    let animDelay = 0.2;
+
+    paramData.forEach(p => {
+        let likert = '';
+        for(let i=1; i<=5; i++) {
+            likert += `<label class="likert-option">
+                <input type="radio" name="${p.id}_score" value="${i}" required>
+                <div class="likert-tile"><span class="likert-num">${i}</span></div>
+            </label>`;
+        }
+        scoreContainer.innerHTML += `
+            <div class="card" style="animation: fadeInUp 0.5s ease; animation-fill-mode: both; animation-delay: ${animDelay}s;">
+                <div class="card-title">${p.title}</div>
+                <div class="table-responsive"><table class="ref-table">${p.ref}</table></div>
+                <label style="margin-top:15px;">Sila pilih wajaran skor (1-5) berdasarkan rujukan di atas:</label>
+                <div class="likert-wrapper">${likert}</div>
+            </div>`;
+        animDelay += 0.05;
+    });
+
+    // Form Submit (Create)
+    document.getElementById('operasiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        btn.innerText = 'MEMPROSES REKOD...';
+        btn.style.opacity = '0.7';
+
+        let total = 0;
+        let scores = {};
+        for(let i=1; i<=9; i++) {
+            let val = parseInt(document.querySelector(`input[name="p${i}_score"]:checked`).value);
+            scores[`p${i}`] = val;
+            total += val;
+        }
+
+        let payload = {
+            action: 'create',
+            nama: document.getElementById('nama').value,
+            kp: document.getElementById('kp').value,
+            gred: document.getElementById('gred').value,
+            ptjSemasa: document.getElementById('ptjSemasa').value,
+            fasilitiSemasa: document.getElementById('val_fasilitiSemasa') ? document.getElementById('val_fasilitiSemasa').value : document.getElementById('ptjSemasa').value,
+            ptjDiminta: document.getElementById('ptjDiminta').value,
+            fasilitiDiminta: document.getElementById('val_fasilitiDiminta') ? document.getElementById('val_fasilitiDiminta').value : document.getElementById('ptjDiminta').value,
+            scores: scores,
+            totalScore: total
+        };
+
+        fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(data => {
+            if(data.result === 'success') {
+                showToast(`Permohonan berjaya direkod! ID: ${data.id} (Skor: ${total}/45)`, 'success');
+                this.reset();
+                document.getElementById('wrap_fasilitiSemasa').style.display = 'none';
+                document.getElementById('wrap_fasilitiDiminta').style.display = 'none';
+                window.scrollTo(0,0);
+            } else { 
+                showToast('Ralat pelayan: ' + data.message, 'error'); 
+            }
+        })
+        .catch(err => showToast('Gagal berhubung dengan pangkalan data Google. Sila semak internet anda.', 'error'))
+        .finally(() => {
+            btn.innerText = 'Hantar & Rekod Skor Penilaian';
+            btn.style.opacity = '1';
+        });
+    });
+
+    // Dashboard Logic
+    let globalData = [];
+    
+    function checkAdmin() {
+        if(document.getElementById('adminPwd').value === 'admin123') {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            showToast('Akses diluluskan. Memuat turun data...', 'success');
+            fetchDashboardData();
+        } else {
+            showToast('Kata laluan keselamatan tidak sah.', 'error');
+        }
+    }
+
+    function fetchDashboardData() {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">⏳ Sedang menyusun data dari Google Sheets...</td></tr>';
+        
+        fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+            globalData = data.sort((a, b) => b.totalScore - a.totalScore); // Sort Highest Score
+            renderTable(globalData);
+        })
+        .catch(err => {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Gagal menarik data.</td></tr>';
+            showToast('Ralat mengambil rekod jadual.', 'error');
+        });
+    }
+
+    function renderTable(dataArray) {
+        document.getElementById('totalPermohonan').innerText = dataArray.length;
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        if(dataArray.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:gray; padding:30px;">Tiada permohonan ditemui berdasarkan tapisan ini.</td></tr>';
+            return;
+        }
+
+        dataArray.forEach(row => {
+            let dateObj = new Date(row.date);
+            let formattedDate = `${dateObj.getDate()}/${dateObj.getMonth()+1}/${dateObj.getFullYear()}`;
+            
+            let selectClass = "status-select ";
+            if(row.status.includes('Proses')) selectClass += "status-proses";
+            else if(row.status.includes('Terima')) selectClass += "status-terima";
+            else if(row.status.includes('Tolak')) selectClass += "status-tolak";
+
+            tbody.innerHTML += `
+                <tr style="animation: slideInRight 0.3s ease;">
+                    <td style="font-weight:700; font-size:0.85rem; color:var(--brand-blue);">${row.id}</td>
+                    <td style="font-size:0.85rem;">${formattedDate}</td>
+                    <td><strong style="color:var(--brand-navy);">${row.nama}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${row.kp} | ${row.gred}</span></td>
+                    <td style="font-size:0.85rem;">${row.fasilitiSemasa}</td>
+                    <td style="font-size:0.85rem; font-weight:600;">${row.fasilitiDiminta}</td>
+                    <td style="text-align:center; font-weight:800; font-size:1.2rem; color:var(--brand-gold); background:#F8FAFC;">${row.totalScore}</td>
+                    <td>
+                        <select class="${selectClass}" onchange="updateStatus('${row.id}', this)">
+                            <option value="Dalam Proses ⏳" ${row.status.includes('Proses') ? 'selected' : ''}>Dalam Proses ⏳</option>
+                            <option value="Diterima ✅" ${row.status.includes('Terima') ? 'selected' : ''}>Diterima ✅</option>
+                            <option value="Ditolak ❌" ${row.status.includes('Tolak') ? 'selected' : ''}>Ditolak ❌</option>
+                        </select>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function filterTable() {
+        let yFilter = document.getElementById('filterTahun').value;
+        let pFilter = document.getElementById('filterPTj').value;
+        
+        let filtered = globalData.filter(row => {
+            let rowYear = new Date(row.date).getFullYear().toString();
+            let passY = (yFilter === 'ALL') || (rowYear === yFilter);
+            
+            let passP = true;
+            if(pFilter === 'Hospital') passP = row.ptjDiminta.includes('H.');
+            if(pFilter === 'PKD') passP = row.ptjDiminta.includes('PKD');
+            if(pFilter === 'Bahagian') passP = row.ptjDiminta.includes('Bahagian');
+            
+            return passY && passP;
+        });
+        renderTable(filtered);
+    }
+
+    function updateStatus(id, selectElement) {
+        const newStatus = selectElement.value;
+        selectElement.style.opacity = '0.5';
+        showToast(`Mengemaskini status ${id}...`, 'info');
+        
+        let payload = { action: 'updateStatus', id: id, status: newStatus };
+        
+        fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(data => {
+            if(data.result === 'success') {
+                showToast(`Status ${id} berjaya dikemaskini kepada ${newStatus}`, 'success');
+                selectElement.className = "status-select ";
+                if(newStatus.includes('Proses')) selectElement.className += "status-proses";
+                else if(newStatus.includes('Terima')) selectElement.className += "status-terima";
+                else if(newStatus.includes('Tolak')) selectElement.className += "status-tolak";
+            } else {
+                showToast('Gagal: ' + data.message, 'error');
+                fetchDashboardData();
+            }
+        })
+        .catch(err => {
+            showToast('Ralat Rangkaian semasa mengemas kini.', 'error');
+            fetchDashboardData(); 
+        })
+        .finally(() => {
+            selectElement.style.opacity = '1';
+        });
+    }
+
+    // Modal Handlers
+    function openModal(modalId) { document.getElementById(modalId).style.display = "block"; }
+    function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+    window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
+</script>
+</body>
+</html>
