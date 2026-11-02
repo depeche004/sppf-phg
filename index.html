@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOVE-Rx PHG | Sistem Operasi Pertukaran</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
     <style>
         :root { 
             --brand-navy: #0B2447; --brand-blue: #19376D; --brand-gold: #C5A059; 
@@ -125,6 +126,32 @@
         .close { color: var(--text-muted); position: absolute; right: 25px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .close:hover { color: var(--error-red); }
 
+        /* Distance tool (Leaflet + OSRM) */
+        .jarak-box { margin-top: 20px; background: rgba(248, 250, 252, 0.8); border: 1px solid var(--border); border-left: 4px solid var(--brand-gold); border-radius: 6px; padding: 18px; }
+        .jarak-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+        .jarak-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .jarak-result { font-size: 0.95rem; font-weight: 600; color: var(--brand-navy); max-width: 520px; }
+        .jarak-result .km { font-size: 1.6rem; font-weight: 800; }
+        .jarak-result.is-error { color: var(--error-red); }
+        .jarak-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
+        .route-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+        .route-toggle label { display: flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; }
+        .route-toggle label:has(input:checked) { border-color: var(--brand-gold); background: rgba(197, 160, 89, 0.15); }
+        .route-toggle input { accent-color: var(--brand-navy); cursor: pointer; }
+        .map-box { height: 340px; margin-top: 14px; border: 1px solid var(--border); border-radius: 6px; position: relative; z-index: 0; isolation: isolate; }
+        .tools-map { height: 520px; margin-top: 18px; }
+        .jarak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .jarak-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+        .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--brand-navy); line-height: 1.2; }
+        .stat-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+        .p3-hint { background: rgba(197, 160, 89, 0.12); border-left: 4px solid var(--brand-gold); border-radius: 6px; padding: 10px 14px; font-size: 0.9rem; color: var(--brand-navy); }
+        .p3-hint.diff { background: #FEF3C7; }
+        .p3-hint:empty { display: none; }
+        .pop-actions { display: flex; gap: 6px; margin-top: 8px; }
+        .pop-actions button { flex: 1; background: var(--brand-navy); color: #fff; border: none; border-radius: 4px; padding: 6px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        @media (max-width: 768px) { .jarak-grid, .jarak-stats { grid-template-columns: 1fr; } .map-box { height: 280px; } .tools-map { height: 400px; } .nav-btn { padding: 14px 10px; font-size: 0.82rem; } }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) { 
             .form-grid { grid-template-columns: 1fr; } 
@@ -147,6 +174,7 @@
 
 <nav class="app-nav">
     <button class="nav-btn active" onclick="navigate('#borang')">Borang Penilaian KJF</button>
+    <button class="nav-btn" onclick="navigate('#jarak')">Kalkulator Jarak</button>
     <button class="nav-btn" onclick="navigate('#admin')">Pangkalan Data (Admin)</button>
 </nav>
 
@@ -278,6 +306,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="jarak-box" id="jarakBox">
+                    <div class="jarak-head">
+                        <div>
+                            <div class="jarak-label">Jarak Pemanduan Automatik</div>
+                            <div class="jarak-result" id="jarakResult">Pilih fasiliti semasa dan fasiliti diminta untuk mengira jarak secara automatik.</div>
+                        </div>
+                        <div>
+                            <div class="jarak-label">Jenis Laluan</div>
+                            <div class="route-toggle">
+                                <label><input type="radio" name="routeType" value="normal" checked> Biasa</label>
+                                <label><input type="radio" name="routeType" value="interior"> Pedalaman / Berbukit</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="map-box" id="formMap" style="display:none;"></div>
+                    <div class="jarak-note">Skor P3 dicadangkan secara automatik berdasarkan jarak jalan raya (OSRM / OpenStreetMap) dan jenis laluan. Skor masih boleh diubah secara manual. Untuk PKD, pilih nama klinik daripada senarai cadangan supaya lokasi dapat dikesan.</div>
+                </div>
             </div>
 
             <!-- Scoring Parameters -->
@@ -381,6 +427,36 @@
         </div>
     </div>
     
+    <!-- KALKULATOR JARAK -->
+    <div id="jarakView" class="view-section">
+        <div class="card">
+            <div class="card-title">Kalkulator Jarak Pemanduan Fasiliti</div>
+            <div class="jarak-grid">
+                <div class="form-group">
+                    <label for="toolFrom">Fasiliti Asal</label>
+                    <select id="toolFrom"><option value="">Memuatkan data...</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="toolTo">Fasiliti Destinasi</label>
+                    <select id="toolTo"><option value="">Memuatkan data...</option></select>
+                </div>
+            </div>
+            <div class="jarak-label">Jenis Laluan (untuk cadangan skor P3)</div>
+            <div class="route-toggle">
+                <label><input type="radio" name="toolRouteType" value="normal" checked> Biasa</label>
+                <label><input type="radio" name="toolRouteType" value="interior"> Pedalaman / Berbukit</label>
+            </div>
+            <div class="jarak-stats">
+                <div class="stat"><div class="stat-value" id="toolKm">–</div><div class="stat-label">Jarak (km)</div></div>
+                <div class="stat"><div class="stat-value" id="toolTime">–</div><div class="stat-label">Anggaran masa</div></div>
+                <div class="stat"><div class="stat-value" id="toolP3">–</div><div class="stat-label">Cadangan skor P3</div></div>
+            </div>
+            <div class="jarak-note" id="toolMsg">Pilih asal dan destinasi, atau klik penanda pada peta.</div>
+            <div class="map-box tools-map" id="toolMap"></div>
+            <div class="jarak-note">Penanda emas = hospital / Bahagian Perkhidmatan Farmasi; penanda biru = klinik. Jarak dikira mengikut jalan raya (OSRM) dan boleh berbeza sedikit daripada jarak sebenar.</div>
+        </div>
+    </div>
+
     <!-- 404 NOT FOUND -->
     <div id="error404View" class="view-section">
         <div style="text-align: center; padding: 80px 20px;">
@@ -470,10 +546,14 @@
         } else if (hash === '#admin') {
             document.getElementById('adminView').classList.add('active');
             document.querySelector(`button[onclick="navigate('#admin')"]`).classList.add('active');
+        } else if (hash === '#jarak') {
+            document.getElementById('jarakView').classList.add('active');
+            document.querySelector(`button[onclick="navigate('#jarak')"]`).classList.add('active');
         } else {
             document.getElementById('error404View').classList.add('active');
         }
         window.scrollTo(0, 0);
+        if (window.Jarak) Jarak.onRoute(hash);
     }
 
     // Cascading Dropdown
@@ -500,6 +580,7 @@
             wrap.style.display = 'none';
             container.innerHTML = `<input type="hidden" id="val_fasiliti${type}" value="${ptjVal}">`;
         }
+        if (window.Jarak) Jarak.enhance(type);
     }
 
     // Rubrics Generation
@@ -528,7 +609,7 @@
             <div class="card">
                 <div class="card-title">${p.title}</div>
                 <div class="table-responsive"><table class="ref-table">${p.ref}</table></div>
-                <div class="likert-wrapper">${likert}</div>
+                ${p.id === 'p3' ? '<div id="p3Hint" class="p3-hint"></div>' : ''}<div class="likert-wrapper">${likert}</div>
             </div>`;
     });
 
@@ -587,7 +668,8 @@
             ptjDiminta: document.getElementById('ptjDiminta').value,
             fasilitiDiminta: document.getElementById('val_fasilitiDiminta') ? document.getElementById('val_fasilitiDiminta').value : document.getElementById('ptjDiminta').value,
             scores: scores, totalScore: total,
-            tatatertib: tata, latihBaru: latih, dokumen: docs.join(', '), ulasan: document.getElementById('ulasan_kjf').value
+            tatatertib: tata, latihBaru: latih, dokumen: docs.join(', '), ulasan: document.getElementById('ulasan_kjf').value,
+            ...(window.Jarak ? Jarak.payloadFields() : {})
         };
 
         fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
@@ -596,6 +678,7 @@
             if(data.result === 'success') {
                 showToast(`Selesai! ID Rujukan: ${data.id}`, 'success');
                 this.reset();
+                if (window.Jarak) Jarak.reset();
                 document.getElementById('scoreTrackerBox').style.display = 'none';
                 document.getElementById('wrap_fasilitiSemasa').style.display = 'none';
                 document.getElementById('wrap_fasilitiDiminta').style.display = 'none';
@@ -709,6 +792,431 @@
     function openModal(modalId) { document.getElementById(modalId).style.display = "block"; }
     function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
     window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+/* ============================================================================
+   MODUL JARAK PEMANDUAN
+   - Data fasiliti : Pahang_Healthcare_Facilities_Data_Updated.csv (folder yang sama dengan laman ini)
+                     Lajur wajib: Name, District, Latitude, Longitude. Lajur lain diabaikan.
+   - Laluan        : OSRM demo server (router.project-osrm.org) - untuk penggunaan ringan sahaja
+   - Peta          : Leaflet + OpenStreetMap
+   Skrip ini sengaja diasingkan: jika ia gagal dimuat, borang penilaian tetap berfungsi.
+   ============================================================================ */
+(function () {
+    'use strict';
+
+    const DATA_URL = 'Pahang_Healthcare_Facilities_Data_Updated.csv';
+    const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
+    const BPF_NAME = 'Bahagian Perkhidmatan Farmasi';
+    const HAS_MAP = typeof L !== 'undefined';
+    const DEFAULT_MSG = 'Pilih fasiliti semasa dan fasiliti diminta untuk mengira jarak secara automatik.';
+
+    // Nilai dropdown borang -> lajur "Name" dalam CSV
+    const HOSPITAL_MAP = {
+        'HTAA Kuantan': 'Hospital Tengku Ampuan Afzan (HTAA)',
+        'HOSHAS Temerloh': 'Hospital Sultan Haji Ahmad Shah',
+        'H. Kuala Lipis': 'Hospital Kuala Lipis',
+        'H. Bentong': 'Hospital Bentong',
+        'H. Raub': 'Hospital Raub',
+        'H. Jerantut': 'Hospital Jerantut',
+        'H. Jengka': 'Hospital Jengka',
+        'H. Pekan': 'Hospital Pekan',
+        'H. Muadzam Shah': 'Hospital Muadzam Shah',
+        'H. Sultanah Hajjah Kalsom': 'Hospital Sultanah Hajjah Kalsom',
+        'H. Rompin': 'Hospital Rompin',
+        'H. Bera': 'Hospital Bera'
+    };
+
+    let facilities = [];
+    let byKey = {};              // nama (huruf kecil) -> fasiliti
+    let loadState = 'loading';   // loading | ready | error
+    const routeCache = new Map();
+
+    /* ---------- utiliti ---------- */
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+    const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    const checkedValue = name => { const el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : 'normal'; };
+
+    function parseCSV(text) {
+        const rows = []; let row = [], field = '', inQ = false;
+        text = text.replace(/^﻿/, '');
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (inQ) {
+                if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false; }
+                else field += c;
+            } else if (c === '"') inQ = true;
+            else if (c === ',') { row.push(field); field = ''; }
+            else if (c === '\n' || c === '\r') {
+                if (c === '\r' && text[i + 1] === '\n') i++;
+                row.push(field); field = ''; rows.push(row); row = [];
+            } else field += c;
+        }
+        if (field !== '' || row.length) { row.push(field); rows.push(row); }
+        return rows.filter(r => r.some(x => x.trim() !== ''));
+    }
+
+    function parseFacilities(text) {
+        const rows = parseCSV(text);
+        if (!rows.length) throw new Error('CSV kosong');
+        const head = rows[0].map(h => h.trim());
+        const iName = head.indexOf('Name'), iDist = head.indexOf('District'), iLat = head.indexOf('Latitude'), iLng = head.indexOf('Longitude');
+        if ([iName, iDist, iLat, iLng].includes(-1)) throw new Error('Lajur Name/District/Latitude/Longitude tidak lengkap');
+        const out = [];
+        rows.slice(1).forEach((r, n) => {
+            const f = { name: (r[iName] || '').trim(), district: (r[iDist] || '').trim(), lat: parseFloat(r[iLat]), lng: parseFloat(r[iLng]) };
+            const valid = f.name && isFinite(f.lat) && isFinite(f.lng) && f.lat >= 1 && f.lat <= 7 && f.lng >= 99 && f.lng <= 105;
+            if (!valid) { console.warn('[Jarak] Baris ' + (n + 2) + ' dilangkau (nama/koordinat tidak sah): ' + (r[iName] || '?')); return; }
+            f.hub = /^(Hospital|Bahagian)\b/.test(f.name);
+            out.push(f);
+        });
+        return out;
+    }
+
+    /* ---------- pengiraan ---------- */
+    function haversineKm(a, b) {
+        const R = 6371, rad = x => x * Math.PI / 180;
+        const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
+    // Jadual P3. Jarak dibundarkan ke km terdekat supaya tiada jurang antara "30 km" dan "31 km".
+    // Laluan biasa      : <=30 -> 1 | 31-70 -> 2 | 71-150 -> 3 | 151-300 -> 4 | >300 -> 5
+    // Pedalaman/berbukit: <=30 -> 2 | 31-70 -> 3 | 71-150 -> 4 | >150 -> 5
+    function p3Band(km, interior) {
+        if (km < 0.1) return 1;
+        const d = Math.round(km);
+        const base = d <= 30 ? 1 : d <= 70 ? 2 : d <= 150 ? 3 : d <= 300 ? 4 : 5;
+        return interior ? Math.min(5, base + 1) : base;
+    }
+
+    function fmtMinutes(m) {
+        m = Math.round(m);
+        return m < 60 ? m + ' min' : Math.floor(m / 60) + ' j ' + (m % 60) + ' min';
+    }
+
+    async function getRoute(a, b) {
+        const key = a.lng + ',' + a.lat + ';' + b.lng + ',' + b.lat;
+        if (routeCache.has(key)) return routeCache.get(key);
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 12000);
+        try {
+            const res = await fetch(OSRM_URL + key + '?overview=full&geometries=geojson', { signal: ctrl.signal });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            let out;
+            if (data.code === 'Ok' && data.routes && data.routes[0]) {
+                const r = data.routes[0];
+                out = { ok: true, km: r.distance / 1000, minutes: r.duration / 60, line: r.geometry.coordinates.map(c => [c[1], c[0]]) };
+            } else if (data.code === 'NoRoute') {
+                out = { ok: false, reason: 'noroute' };
+            } else {
+                throw new Error(data.code || 'Respons OSRM tidak dijangka');
+            }
+            routeCache.set(key, out);
+            return out;
+        } finally { clearTimeout(timer); }
+    }
+
+    /* ---------- peta ---------- */
+    function makeMap(id, wheelZoom) {
+        const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.75, 102.75], 8);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+        }).addTo(m);
+        return m;
+    }
+
+    function drawRoute(map, layer, a, b, line) {
+        layer.clearLayers();
+        L.circleMarker([a.lat, a.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#059669', fillOpacity: 1 }).bindTooltip('Asal: ' + esc(a.name)).addTo(layer);
+        L.circleMarker([b.lat, b.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#DC2626', fillOpacity: 1 }).bindTooltip('Destinasi: ' + esc(b.name)).addTo(layer);
+        if (line && line.length) {
+            L.polyline(line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(layer);
+            map.fitBounds(L.latLngBounds(line), { padding: [30, 30] });
+        } else {
+            map.fitBounds(L.latLngBounds([[a.lat, a.lng], [b.lat, b.lng]]), { padding: [40, 40], maxZoom: 13 });
+        }
+    }
+
+    /* ======================= BORANG PENILAIAN ======================= */
+    let formMap = null, formLayer = null, formToken = 0, current = null;
+
+    function resolveForm(type) {
+        const ptjEl = $('ptj' + type);
+        const ptj = ptjEl ? ptjEl.value : '';
+        if (!ptj) return { state: 'empty' };
+        let f = null, label = ptj;
+        if (ptj === 'Bahagian Perkhidmatan Farmasi, JKNP') {
+            f = byKey[norm(BPF_NAME)];                       // semua cawangan berada di BPF
+        } else if (HOSPITAL_MAP[ptj]) {
+            f = byKey[norm(HOSPITAL_MAP[ptj])];
+        } else if (ptj.indexOf('PKD') === 0) {
+            const el = $('val_fasiliti' + type);
+            const v = el ? el.value.trim() : '';
+            if (!v) return { state: 'empty' };
+            f = byKey[norm(v)];
+            label = v;
+        }
+        return f ? { state: 'ok', f: f } : { state: 'nocoord', label: label };
+    }
+
+    function setResult(html, isErr) {
+        const el = $('jarakResult');
+        el.innerHTML = html;
+        el.classList.toggle('is-error', !!isErr);
+    }
+
+    function showFormMapFor(a, b, line) {
+        if (!HAS_MAP) return;
+        $('formMap').style.display = 'block';
+        if (!formMap) { formMap = makeMap('formMap', false); formLayer = L.layerGroup().addTo(formMap); }
+        formMap.invalidateSize();
+        drawRoute(formMap, formLayer, a, b, line);
+    }
+    function hideFormMap() { $('formMap').style.display = 'none'; }
+
+    function renderHint() {
+        const el = $('p3Hint');
+        if (!el) return;
+        if (!current || !current.reliable) { el.innerHTML = ''; el.classList.remove('diff'); return; }
+        const interior = checkedValue('routeType') === 'interior';
+        const band = p3Band(current.km, interior);
+        const chosen = document.querySelector('input[name="p3_score"]:checked');
+        const differs = !!chosen && +chosen.value !== band;
+        el.classList.toggle('diff', differs);
+        el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km, laluan ' +
+            (interior ? 'pedalaman/berbukit' : 'biasa') + '.' +
+            (differs ? ' <strong>Pilihan semasa (' + chosen.value + ') berbeza daripada cadangan sistem.</strong>' : '');
+    }
+
+    function applyP3() {
+        if (!current || !current.reliable) return;
+        const band = p3Band(current.km, checkedValue('routeType') === 'interior');
+        const radio = document.querySelector('input[name="p3_score"][value="' + band + '"]');
+        if (radio && !radio.checked) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change', { bubbles: true }));   // kemas kini penjejak skor
+        }
+        renderHint();
+    }
+
+    async function updateForm() {
+        const token = ++formToken;
+        current = null;
+        if (loadState === 'loading') { setResult('Memuatkan data lokasi fasiliti...'); return renderHint(); }
+        if (loadState === 'error') {
+            setResult('Data lokasi fasiliti tidak dapat dimuatkan. Sila pilih skor P3 secara manual.', true);
+            return renderHint();
+        }
+        const A = resolveForm('Semasa'), B = resolveForm('Diminta');
+        if (A.state === 'empty' || B.state === 'empty') { setResult(DEFAULT_MSG); hideFormMap(); return renderHint(); }
+        if (A.state === 'nocoord' || B.state === 'nocoord') {
+            const bad = A.state === 'nocoord' ? A : B;
+            setResult('Lokasi &ldquo;' + esc(bad.label) + '&rdquo; tiada dalam pangkalan data fasiliti. Pilih daripada senarai cadangan untuk kiraan automatik, atau pilih skor P3 secara manual.');
+            hideFormMap();
+            return renderHint();
+        }
+        if (A.f === B.f) {
+            current = { km: 0, minutes: 0, source: 'Lokasi sama', reliable: true };
+            setResult('<span class="km">0 km</span> &middot; fasiliti semasa dan diminta ialah lokasi yang sama.');
+            showFormMapFor(A.f, B.f, null);
+            return applyP3();
+        }
+
+        setResult('Mengira laluan...');
+        showFormMapFor(A.f, B.f, null);
+        let r = null;
+        try { r = await getRoute(A.f, B.f); } catch (e) { console.warn('[Jarak] OSRM gagal:', e); }
+        if (token !== formToken) return;       // pilihan sudah berubah semasa menunggu
+
+        if (r && r.ok) {
+            current = { km: r.km, minutes: r.minutes, source: 'OSRM', reliable: true };
+            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; anggaran ' + fmtMinutes(r.minutes) + ' melalui jalan raya');
+            showFormMapFor(A.f, B.f, r.line);
+            applyP3();
+        } else if (r && r.reason === 'noroute') {
+            setResult('Tiada laluan jalan raya ditemui antara kedua-dua lokasi (cth. fasiliti di pulau). Sila pilih skor P3 secara manual.', true);
+        } else {
+            const km = haversineKm(A.f, B.f);
+            current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
+            setResult('Perkhidmatan laluan tidak dapat dihubungi. Jarak garis lurus &asymp; <span class="km">' + km.toFixed(1) +
+                ' km</span> (anggaran kasar, lebih pendek daripada jarak pemanduan sebenar). Skor P3 tidak diisi automatik.', true);
+        }
+        renderHint();
+    }
+    const scheduleUpdate = debounce(() => { updateForm().catch(e => console.error('[Jarak]', e)); }, 250);
+
+    // Pilihan baru: buang keputusan lama serta-merta (jangan biarkan jarak lama dihantar semasa menunggu debounce)
+    function invalidate() {
+        const hadResult = !!current;
+        formToken++; current = null;
+        if (hadResult) setResult('Mengira laluan...');
+        renderHint();
+    }
+
+    // Dipanggil oleh handleFasiliti() selepas dropdown PTj ditukar
+    function enhance(type) {
+        const ptj = $('ptj' + type).value;
+        const box = $('container_fasiliti' + type);
+        if (ptj.indexOf('PKD') === 0 && loadState === 'ready') {
+            const district = ptj.replace(/^PKD\s+/, '');
+            const opts = facilities.filter(f => f.district === district && !f.hub)
+                .map(f => '<option value="' + esc(f.name) + '"></option>').join('');
+            box.innerHTML = '<input type="text" id="val_fasiliti' + type + '" required list="dl_fasiliti' + type +
+                '" autocomplete="off" placeholder="Klinik Kesihatan (Cth: KK Beserah)"><datalist id="dl_fasiliti' + type + '">' + opts + '</datalist>';
+        }
+        const el = $('val_fasiliti' + type);
+        if (el && el.type === 'text') el.addEventListener('input', () => { invalidate(); scheduleUpdate(); });
+        invalidate();
+        scheduleUpdate();
+    }
+
+    function payloadFields() {
+        const interior = checkedValue('routeType') === 'interior';
+        return {
+            jarakKm: current ? Math.round(current.km * 10) / 10 : '',
+            jarakSumber: current ? current.source : '',
+            jenisLaluan: interior ? 'Pedalaman/Berbukit' : 'Biasa',
+            p3Cadangan: current && current.reliable ? p3Band(current.km, interior) : ''
+        };
+    }
+
+    function reset() {
+        formToken++; current = null;
+        setResult(DEFAULT_MSG);
+        hideFormMap();
+        if (formLayer) formLayer.clearLayers();
+        renderHint();
+    }
+
+    const form = $('operasiForm');
+    if (form) form.addEventListener('change', e => {
+        const n = e.target && e.target.name;
+        if (n === 'routeType') applyP3();
+        else if (n === 'p3_score') renderHint();
+    });
+
+    /* ======================= TAB KALKULATOR JARAK ======================= */
+    let toolMap = null, toolRouteLayer = null, toolToken = 0, toolCurrent = null, toolReady = false;
+    const TOOL_DEFAULT = 'Pilih asal dan destinasi, atau klik penanda pada peta.';
+
+    function renderToolStats() {
+        const c = toolCurrent;
+        if (!c) { $('toolKm').textContent = '–'; $('toolTime').textContent = '–'; $('toolP3').textContent = '–'; return; }
+        $('toolKm').textContent = (c.reliable ? '' : '≈ ') + c.km.toFixed(1);
+        $('toolTime').textContent = c.minutes == null ? '–' : fmtMinutes(c.minutes);
+        $('toolP3').textContent = c.reliable ? p3Band(c.km, checkedValue('toolRouteType') === 'interior') : '–';
+    }
+
+    async function updateTool() {
+        const token = ++toolToken;
+        toolCurrent = null; renderToolStats();
+        if (toolRouteLayer) toolRouteLayer.clearLayers();
+        const from = $('toolFrom').value, to = $('toolTo').value;
+        const msg = $('toolMsg');
+        if (from === '' || to === '') { msg.textContent = TOOL_DEFAULT; return; }
+        const a = facilities[+from], b = facilities[+to];
+        if (a === b) { toolCurrent = { km: 0, minutes: 0, reliable: true }; renderToolStats(); msg.textContent = 'Asal dan destinasi ialah fasiliti yang sama.'; return; }
+        msg.textContent = 'Mengira laluan...';
+        if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, null);
+        let r = null;
+        try { r = await getRoute(a, b); } catch (e) { console.warn('[Jarak] OSRM gagal:', e); }
+        if (token !== toolToken) return;
+        if (r && r.ok) {
+            toolCurrent = { km: r.km, minutes: r.minutes, reliable: true };
+            msg.textContent = a.name + ' → ' + b.name;
+            if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, r.line);
+        } else if (r && r.reason === 'noroute') {
+            msg.textContent = 'Tiada laluan jalan raya ditemui antara kedua-dua lokasi (cth. fasiliti di pulau).';
+        } else {
+            toolCurrent = { km: haversineKm(a, b), minutes: null, reliable: false };
+            msg.textContent = 'Perkhidmatan laluan tidak dapat dihubungi. Dipaparkan jarak garis lurus (anggaran kasar).';
+        }
+        renderToolStats();
+    }
+
+    function initTool() {
+        if (toolReady || loadState !== 'ready') return;
+        toolReady = true;
+        const districts = Array.from(new Set(facilities.map(f => f.district))).sort();
+        const opts = '<option value="">-- Pilih fasiliti --</option>' + districts.map(d =>
+            '<optgroup label="' + esc(d) + '">' +
+            facilities.map((f, i) => f.district === d ? '<option value="' + i + '">' + esc(f.name) + '</option>' : '').join('') +
+            '</optgroup>').join('');
+        $('toolFrom').innerHTML = opts;
+        $('toolTo').innerHTML = opts;
+        $('toolFrom').addEventListener('change', updateTool);
+        $('toolTo').addEventListener('change', updateTool);
+        document.querySelectorAll('input[name="toolRouteType"]').forEach(r => r.addEventListener('change', renderToolStats));
+
+        if (HAS_MAP) {
+            toolMap = makeMap('toolMap', true);
+            toolRouteLayer = L.layerGroup().addTo(toolMap);
+            const pts = [];
+            facilities.forEach((f, i) => {
+                const m = L.circleMarker([f.lat, f.lng], f.hub
+                    ? { radius: 8, color: '#0B2447', weight: 2, fillColor: '#C5A059', fillOpacity: 1 }
+                    : { radius: 5, color: '#19376D', weight: 1, fillColor: '#19376D', fillOpacity: 0.7 });
+                m.bindTooltip(esc(f.name));
+                m.bindPopup('<strong>' + esc(f.name) + '</strong><br><span style="color:#64748B">' + esc(f.district) + '</span>' +
+                    '<div class="pop-actions"><button type="button" onclick="Jarak.pick(' + i + ',\'from\')">Jadikan Asal</button>' +
+                    '<button type="button" onclick="Jarak.pick(' + i + ',\'to\')">Jadikan Destinasi</button></div>');
+                m.addTo(toolMap);
+                pts.push([f.lat, f.lng]);
+            });
+            if (pts.length) toolMap.fitBounds(pts, { padding: [20, 20] });
+        } else {
+            $('toolMap').style.display = 'none';
+            $('toolMsg').textContent = 'Peta tidak dapat dimuatkan, tetapi kiraan jarak masih boleh digunakan.';
+        }
+    }
+
+    function pick(i, which) {
+        if (!toolReady) return;
+        $(which === 'from' ? 'toolFrom' : 'toolTo').value = String(i);
+        if (toolMap) toolMap.closePopup();
+        updateTool();
+    }
+
+    function onRoute(hash) {
+        if (hash === '#jarak') {
+            if (loadState === 'ready') initTool();
+            else if (loadState === 'error') $('toolMsg').textContent = 'Data lokasi fasiliti tidak dapat dimuatkan. Pastikan fail CSV berada dalam folder yang sama dengan laman ini.';
+            setTimeout(() => { if (toolMap) toolMap.invalidateSize(); }, 80);
+        } else if (hash === '#borang' || hash === '') {
+            setTimeout(() => { if (formMap) formMap.invalidateSize(); }, 80);
+        }
+    }
+
+    window.Jarak = { enhance, reset, payloadFields, onRoute, pick, _test: { parseCSV, p3Band, haversineKm } };
+
+    /* ---------- muat data ---------- */
+    (async function load() {
+        try {
+            const res = await fetch(DATA_URL, { cache: 'no-cache' });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            facilities = parseFacilities(await res.text());
+            if (!facilities.length) throw new Error('Tiada fasiliti sah dalam CSV');
+            facilities.forEach(f => {
+                if (byKey[norm(f.name)]) console.warn('[Jarak] Nama fasiliti berganda dalam CSV: ' + f.name);
+                byKey[norm(f.name)] = f;
+            });
+            loadState = 'ready';
+        } catch (e) {
+            console.error('[Jarak] Gagal memuatkan data fasiliti:', e);
+            loadState = 'error';
+        }
+        scheduleUpdate();
+        if (location.hash === '#jarak') onRoute('#jarak');
+    })();
+})();
 </script>
 </body>
 </html>
