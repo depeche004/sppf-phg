@@ -1,0 +1,21 @@
+PROPRIETARY AND CONFIDENTIAL SOFTWARE LICENSE
+
+Copyright (c) 2026 Jabatan Kesihatan Negeri Pahang (JKNP)
+Developed by: Muhammad Hafizul Aniq bin Khairul Hafidz, RPh. 25588
+Project: MOVE-Rx PHG (NMRR ID-26-03968-MPU)
+
+1. PERMISSIONS
+This software and its associated source code are the proprietary assets of the Pahang State Health Department (JKNP), Ministry of Health Malaysia. Access and usage are strictly limited to authorized personnel (Ketua Jabatan Farmasi, Pegawai Farmasi Kesihatan, and appointed state administrators) for the sole purpose of official human resource management and evaluation.
+
+2. RESTRICTIONS
+You may not, under any circumstances:
+a) Copy, duplicate, or reproduce the source code or system architecture for external, personal, or commercial use.
+b) Distribute, sub-license, or share the repository or web application links with unauthorized third parties.
+c) Modify, reverse-engineer, or manipulate the core scoring logic and parameters without written approval from the JKNP Pharmacy Division management.
+d) Bypass, disable, or interfere with the security features, including the centralized administrative dashboard.
+
+3. DATA PRIVACY & CONFIDENTIALITY
+All user-submitted data, including identification numbers, medical conditions, and demographic details, are governed by the Malaysian Good Clinical Practice (GCP) guidelines and the Medical Research and Ethics Committee (MREC). Extraction or unauthorized viewing of this data outside official transfer meeting proceedings is strictly prohibited and subject to disciplinary action.
+
+4. DISCLAIMER
+This software is provided "as is", without warranty of any kind, express or implied. In no event shall the authors, developers, or JKNP be liable for any claim, damages, or other liability arising from unauthorized modification or misuse of the software.
