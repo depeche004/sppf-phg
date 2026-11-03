@@ -53,8 +53,9 @@
         /* Cards */
         .card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 8px; padding: 30px; margin-bottom: 24px; border: 1px solid rgba(226, 232, 240, 0.8); border-top: 4px solid var(--brand-blue); box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .card-title { font-size: 1.15rem; color: var(--brand-navy); font-weight: 600; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
+        .card-title { font-size: 1.15rem; color: var(--brand-navy); font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+
         /* Forms */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -62,7 +63,8 @@
         label { font-weight: 600; display: block; margin-bottom: 6px; color: var(--brand-navy); font-size: 0.9rem; }
         input[type="text"], input[type="email"], input[type="number"], select, textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.3s; background: rgba(248, 250, 252, 0.8); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand-blue); background: var(--surface); box-shadow: 0 0 0 3px rgba(25, 55, 109, 0.1); }
-        
+        select:disabled { background: #E2E8F0; cursor: not-allowed; opacity: 0.8; }
+
         .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
         .opt-label { display: flex; align-items: flex-start; gap: 10px; font-weight: 500; color: var(--text-main); font-size: 0.95rem; cursor: pointer; padding: 8px; border-radius: 6px; transition: 0.2s; }
         .opt-label:hover { background: #F1F5F9; }
@@ -73,7 +75,7 @@
         .ref-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--surface); min-width: 450px; }
         .ref-table th, .ref-table td { padding: 12px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
         .ref-table th { background: #F1F5F9; color: var(--brand-navy); font-weight: 600; text-align: left; }
-        .ref-table td:first-child { font-weight: 700; text-align: center; width: 45px; background: #F8FAFC; color: var(--brand-blue);}
+        .ref-table td:first-child { font-weight: 700; text-align: center; width: 50px; background: #F8FAFC; color: var(--brand-blue);}
 
         /* Likert */
         .likert-wrapper { display: grid; gap: 10px; margin-top: 15px; }
@@ -108,7 +110,7 @@
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Toasts */
+        /* Clean Toasts */
         .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 16px 20px; border-radius: 6px; color: white; font-weight: 500; font-size: 0.9rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; min-width: 250px; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -129,7 +131,7 @@
         .close { color: var(--text-muted); position: absolute; right: 25px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .close:hover { color: var(--error-red); }
 
-        /* Distance tool */
+        /* Distance Tool */
         .jarak-box { margin-top: 20px; background: rgba(248, 250, 252, 0.8); border: 1px solid var(--border); border-left: 4px solid var(--brand-gold); border-radius: 6px; padding: 18px; }
         .jarak-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .jarak-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
@@ -141,7 +143,7 @@
         .route-toggle label { display: flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; }
         .route-toggle label:has(input:checked) { border-color: var(--brand-gold); background: rgba(197, 160, 89, 0.15); }
         .route-toggle input { accent-color: var(--brand-navy); cursor: pointer; }
-        .map-box { height: 340px; margin-top: 14px; border: 1px solid var(--border); border-radius: 6px; position: relative; z-index: 0; isolation: isolate; }
+        .map-box { height: 350px; margin-top: 14px; border: 1px solid var(--border); border-radius: 6px; position: relative; z-index: 0; isolation: isolate; }
         .tools-map { height: 520px; margin-top: 18px; }
         .jarak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .jarak-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
@@ -194,6 +196,7 @@
             <!-- 1. Maklumat Pegawai -->
             <div class="card">
                 <div class="card-title">1. Maklumat Pegawai Yang Dinilai</div>
+                <div class="card-desc">Maklumat peribadi pemohon bagi rekod perjawatan dan pangkalan data urusetia pertukaran.</div>
                 <div class="form-group">
                     <label>Nama Penuh</label>
                     <input type="text" id="nama" required placeholder="Nama penuh pemohon">
@@ -217,9 +220,21 @@
                 </div>
             </div>
 
-            <!-- 2. Maklumat Penempatan -->
+            <!-- 2. Maklumat Penempatan & Alamat Kediaman -->
             <div class="card">
-                <div class="card-title">2. Maklumat Penempatan</div>
+                <div class="card-title">2. Maklumat Penempatan & Logistik Kediaman</div>
+                <div class="card-desc">Jarak logistik P3 diukur terus dari kediaman pegawai / kediaman pasangan (PJJ) ke fasiliti bertugas yang diminta.</div>
+
+                <!-- Input Carian Lokasi Kediaman -->
+                <div style="background: rgba(248, 250, 252, 0.9); padding: 18px; border: 1px solid var(--border); border-left: 4px solid var(--brand-navy); border-radius: 6px; margin-bottom: 20px;">
+                    <label style="color: var(--brand-navy); margin-bottom: 8px;">Lokasi Kediaman Pemohon (Rumah Semasa / Rumah Pasangan PJJ)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="alamatKediaman" placeholder="Taip nama taman, jalan atau bandar (Cth: Taman Tas, Kuantan / Bandar Pusat Jengka)" style="flex: 1;">
+                        <button type="button" id="btnCariRumah" onclick="Jarak.searchHome()" style="background: var(--brand-navy); color: #fff; border: 0; padding: 0 20px; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap;">Cari Lokasi</button>
+                    </div>
+                    <small style="color: var(--text-muted); display: block; margin-top: 6px;">Tip: Selepas lokasi dicari, anda juga boleh klik atau seret penanda kediaman berwarna oren di atas peta untuk melaraskan kedudukan rumah dengan lebih tepat.</small>
+                </div>
+
                 <div class="form-grid">
                     <div style="background: rgba(248, 250, 252, 0.8); padding: 15px; border: 1px solid var(--border); border-radius: 6px;">
                         <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI SEMASA</label>
@@ -263,7 +278,7 @@
                     </div>
 
                     <div style="background: rgba(248, 250, 252, 0.8); padding: 15px; border: 1px solid var(--border); border-radius: 6px;">
-                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI DIMINTA</label>
+                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI DIMINTA (DESTINASI UKURAN P3)</label>
                         <div class="form-group">
                             <select id="ptjDiminta" required onchange="handleFasiliti('Diminta')">
                                 <option value="">-- Kategori PTj --</option>
@@ -307,8 +322,8 @@
                 <div class="jarak-box" id="jarakBox">
                     <div class="jarak-head">
                         <div>
-                            <div class="jarak-label">Jarak Pemanduan Automatik</div>
-                            <div class="jarak-result" id="jarakResult">Pilih fasiliti semasa dan fasiliti diminta untuk mengira jarak secara automatik.</div>
+                            <div class="jarak-label">Jarak Pemanduan Kediaman &rarr; Fasiliti Diminta</div>
+                            <div class="jarak-result" id="jarakResult">Cari lokasi kediaman dan pilih fasiliti diminta untuk mengira jarak secara automatik.</div>
                         </div>
                         <div>
                             <div class="jarak-label">Jenis Laluan</div>
@@ -319,16 +334,17 @@
                         </div>
                     </div>
                     <div class="map-box" id="formMap" style="display:none;"></div>
-                    <div class="jarak-note">Skor P3 dicadangkan secara automatik berdasarkan jarak jalan raya (OSRM / OpenStreetMap) dan jenis laluan. Skor masih boleh diubah secara manual. Untuk PKD, pilih nama klinik daripada senarai cadangan supaya lokasi dapat dikesan.</div>
+                    <div class="jarak-note">Skor P3 dicadangkan secara automatik berdasarkan jarak jalan raya (OSRM) dari kediaman ke fasiliti diminta. Penilai tetap mempunyai budi bicara untuk mengubah skor sekiranya perlu.</div>
                 </div>
             </div>
 
-            <!-- Parameter P1 - P9 -->
+            <!-- Parameter P1 - P9 (Dihasilkan Secara Dinamik) -->
             <div id="scoringContainer"></div>
 
             <!-- 3. Maklumat Tambahan -->
             <div class="card">
                 <div class="card-title">3. Maklumat Pengurusan & Pentadbiran</div>
+                <div class="card-desc">Semakan rekod integriti, pemindahan pengetahuan portfolio khas, dan dokumen sokongan fizikal.</div>
                 
                 <div class="form-group" style="margin-bottom: 24px;">
                     <label>Rekod tatatertib (jika ada)</label>
@@ -336,7 +352,7 @@
                         <label class="opt-label"><input type="radio" name="tatatertib_status" value="Ya" onchange="toggleInput('tatatertib_nota', true)"> Ya</label>
                         <label class="opt-label"><input type="radio" name="tatatertib_status" value="Tidak" checked onchange="toggleInput('tatatertib_nota', false)"> Tidak</label>
                     </div>
-                    <input type="text" id="tatatertib_nota" placeholder="Jika ya, nyatakan..." style="display:none; margin-top:10px;">
+                    <input type="text" id="tatatertib_nota" placeholder="Jika ya, nyatakan perincian tindakan tatatertib..." style="display:none; margin-top:10px;">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 24px;">
@@ -346,7 +362,7 @@
                         <label class="opt-label"><input type="radio" name="latih_status" value="Tidak" onchange="toggleInput('latih_nota', false)"> Tidak</label>
                         <label class="opt-label"><input type="radio" name="latih_status" value="Tidak Berkenaan" checked onchange="toggleInput('latih_nota', false)"> Tidak Berkenaan (tiada portfolio khas)</label>
                     </div>
-                    <input type="text" id="latih_nota" placeholder="Jika ya, nyatakan nama pegawai baru..." style="display:none; margin-top:10px;">
+                    <input type="text" id="latih_nota" placeholder="Jika ya, nyatakan nama pegawai pengganti yang telah dilatih..." style="display:none; margin-top:10px;">
                 </div>
 
                 <div class="form-group">
@@ -363,32 +379,21 @@
                 </div>
             </div>
 
-            <!-- 4. Ulasan & Maklumat Penilai (KJF / PFK / KC) -->
+            <!-- 4. Ulasan & Maklumat Penilai (PTj Dulu -> Jawatan Terikat) -->
             <div class="card">
                 <div class="card-title">4. Maklumat & Ulasan Penilai</div>
+                <div class="card-desc">Pengesahan identiti penilai rasmi. Pilih PTj anda terlebih dahulu bagi membolehkan jawatan diselaraskan secara automatik.</div>
 
-                <!-- Dropdown Maklumat Penilai -->
                 <div class="form-grid-3">
                     <div class="form-group">
                         <label>Nama Penilai</label>
                         <input type="text" id="nama_penilai" required placeholder="Nama penuh penilai">
                     </div>
-                    <div class="form-group">
-                        <label>Jawatan Penilai</label>
-                        <select id="jawatan_penilai" required>
-                            <option value="">-- Sila Pilih Jawatan --</option>
-                            <option value="Ketua Jabatan Farmasi">Ketua Jabatan Farmasi</option>
-                            <option value="Pegawai Farmasi Kesihatan">Pegawai Farmasi Kesihatan</option>
-                            <optgroup label="Ketua Cawangan (BPF JKNP)">
-                                <option value="Ketua Cawangan Pengurusan Farmasi">Ketua Cawangan Pengurusan Farmasi</option>
-                                <option value="Ketua Cawangan Amalan & Perkembangan Farmasi">Ketua Cawangan Amalan & Perkembangan Farmasi</option>
-                                <option value="Ketua Cawangan Penguatkuasaan Farmasi">Ketua Cawangan Penguatkuasaan Farmasi</option>
-                            </optgroup>
-                        </select>
-                    </div>
+                    
+                    <!-- PTj Penilai -->
                     <div class="form-group">
                         <label>PTj Penilai</label>
-                        <select id="ptj_penilai" required>
+                        <select id="ptj_penilai" required onchange="handlePenilaiPTjChange()">
                             <option value="">-- Sila Pilih PTj --</option>
                             <option value="Bahagian Perkhidmatan Farmasi, JKNP">Bahagian Perkhidmatan Farmasi, JKNP</option>
                             <optgroup label="Hospital">
@@ -420,9 +425,17 @@
                             </optgroup>
                         </select>
                     </div>
+
+                    <!-- Jawatan Penilai -->
+                    <div class="form-group">
+                        <label>Jawatan Penilai</label>
+                        <select id="jawatan_penilai" required disabled>
+                            <option value="">-- Pilih PTj Dahulu --</option>
+                        </select>
+                    </div>
                 </div>
                 
-                <!-- SSO Google KKM -->
+                <!-- SSO Google Identity KKM -->
                 <div class="form-group" style="margin-bottom: 24px; background: rgba(248, 250, 252, 0.9); padding: 18px; border: 1px solid var(--border); border-radius: 8px;">
                     <label style="color: var(--brand-navy); margin-bottom: 8px;">Pengesahan E-mel Rasmi Penilai (SSO KKM)</label>
                     
@@ -440,7 +453,7 @@
                              data-shape="rectangular" 
                              data-logo_alignment="left">
                         </div>
-                        <small style="color: var(--text-muted); display: block; margin-top: 8px;">Sila log masuk menggunakan e-mel rasmi <strong>@moh.gov.my</strong> untuk mengesahkan identiti dan menerima salinan PDF borang pertukaran.</small>
+                        <small style="color: var(--text-muted); display: block; margin-top: 8px;">Sila sahkan identiti melalui akaun e-mel rasmi <strong>@moh.gov.my</strong> untuk menerima salinan PDF borang pertukaran.</small>
                     </div>
 
                     <div id="user_profile_box" style="display: none; align-items: center; justify-content: space-between; background: #E8F7EF; border: 1px solid #0F766E; padding: 12px 16px; border-radius: 8px;">
@@ -599,12 +612,13 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('modalTerma')">&times;</span>
     <h2 style="color:var(--brand-navy); margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom:10px;">Terma Penggunaan</h2>
-    <p style="font-size:0.95rem; line-height:1.7;">Platform ini adalah hak milik kerajaan bersandarkan kelulusan NMRR (NMRR ID-26-03968-MPU). Hanya pegawai yang disahkan melalui akaun rasmi <strong>@moh.gov.my</strong> dibenarkan memperakukan borang ini. Manipulasi markah merupakan pelanggaran integriti pengurusan tatatertib perkhidmatan awam.</p>
+    <p style="font-size:0.95rem; line-height:1.7;">Platform ini adalah hak milik kerajaan bersandarkan kelulusan NMRR (NMRR ID-26-03968-MPU). Hanya pegawai yang disahkan melalui akaun rasmi <strong>@moh.gov.my</strong> dibenarkan memperakukan borang ini. Sebarang manipulasi maklumat merupakan pelanggaran tatatertib perkhidmatan awam.</p>
   </div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzw2jFzKF-aRmEDxt-5J4jF39_9RbJlqXP0EdzLdosmuBJslOi6eeNaW1zOjqExvY66fw/exec';
+    // URL Web App Google Apps Script Akaun Gmail Baharu
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-PbgICWqyamlreZvG4eIFxcDBgXs8_nvatWdyCJfY-FoEZlhfcnxVwU9vRcYOqes/exec';
 
     function toggleInput(id, show) { document.getElementById(id).style.display = show ? 'block' : 'none'; }
     
@@ -671,17 +685,100 @@
         if (window.Jarak) Jarak.enhance(type);
     }
 
-    // Skala Pemarkahan: P7 & P8 hanya 1, 3, 5 manakala P9 hanya 1, 3, 4, 5
+    // Dependent Dropdown untuk PTj & Jawatan Penilai
+    function handlePenilaiPTjChange() {
+        const ptj = document.getElementById('ptj_penilai').value;
+        const jwtnSelect = document.getElementById('jawatan_penilai');
+        jwtnSelect.innerHTML = '';
+
+        if (!ptj) {
+            jwtnSelect.innerHTML = '<option value="">-- Pilih PTj Dahulu --</option>';
+            jwtnSelect.disabled = true;
+            return;
+        }
+
+        jwtnSelect.disabled = false;
+
+        if (ptj === 'Bahagian Perkhidmatan Farmasi, JKNP') {
+            jwtnSelect.innerHTML = `
+                <option value="">-- Sila Pilih Cawangan --</option>
+                <option value="Ketua Cawangan Pengurusan Farmasi">Ketua Cawangan Pengurusan Farmasi</option>
+                <option value="Ketua Cawangan Amalan & Perkembangan Farmasi">Ketua Cawangan Amalan & Perkembangan Farmasi</option>
+                <option value="Ketua Cawangan Penguatkuasaan Farmasi">Ketua Cawangan Penguatkuasaan Farmasi</option>
+            `;
+        } else if (ptj.startsWith('PKD')) {
+            jwtnSelect.innerHTML = `<option value="Pegawai Farmasi Kesihatan" selected>Pegawai Farmasi Kesihatan</option>`;
+        } else {
+            // Hospital
+            jwtnSelect.innerHTML = `<option value="Ketua Jabatan Farmasi" selected>Ketua Jabatan Farmasi</option>`;
+        }
+    }
+
+    // Konfigurasi Parameter, Huraian & Skala
     const paramData = [
-        { id: 'p1', title: 'P1: Alasan Pertukaran', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / kesihatan</td></tr>` },
-        { id: 'p2', title: 'P2: Tempoh di Fasiliti Semasa', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` },
-        { id: 'p3', title: 'P3: Beban Logistik & Jarak', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Pedalaman/Berbukit</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>>300km / Antara negeri</td><td>151km - 300km</td></tr>` },
-        { id: 'p4', title: 'P4: Tanggungan Anak (Kuantiti)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Seorang anak</td></tr><tr><td>3</td><td>2 orang anak</td></tr><tr><td>4</td><td>3 orang anak</td></tr><tr><td>5</td><td>≥ 4 orang anak</td></tr>` },
-        { id: 'p5', title: 'P5: Tanggungan Anak (Umur)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Anak sekolah menengah</td></tr><tr><td>3</td><td>Pelbagai peringkat (menengah & rendah)</td></tr><tr><td>4</td><td>Anak kecil (bayi/pra-sekolah/rendah)</td></tr><tr><td>5</td><td>Anak berkeperluan khas (OKU)</td></tr>` },
-        { id: 'p6', title: 'P6: Tanggungan Lain (Pasangan / Ibu Bapa)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada keperluan penjagaan</td></tr><tr><td>2</td><td>Menjaga (Sihat tetapi perlu pemantauan)</td></tr><tr><td>3</td><td>Menjaga (Penyakit kronik terkawal)</td></tr><tr><td>4</td><td>Menjaga uzur (Pergerakan terhad)</td></tr><tr><td>5</td><td>Menjaga uzur (Terlantar/ kritikal)</td></tr>` },
-        { id: 'p7', title: 'P7: Implikasi (Tanpa Pengganti)', scale: [1, 3, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Keperluan kritikal mobilisasi, jejas operasi</td></tr><tr><td>3</td><td>Perlu pelarasan tugas berkala</td></tr><tr><td>5</td><td>Beban kerja boleh diserap staf sedia ada</td></tr>` },
-        { id: 'p8', title: 'P8: Kelangsungan Perkhidmatan', scale: [1, 3, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Terpaksa tutup perkhidmatan (Cth: MTAC)</td></tr><tr><td>3</td><td>Skop dihadkan / Tugas pentadbiran tertangguh</td></tr><tr><td>5</td><td>Perkhidmatan teras diteruskan seperti biasa</td></tr>` },
-        { id: 'p9', title: 'P9: Perakuan Pengurusan', scale: [1, 2, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tidak disokong atas keperluan perkhidmatan</td></tr><tr><td>2</td><td>Disokong dengan pengganti serentak</td></tr><tr><td>4</td><td>Disokong dengan pengganti kemudian</td></tr><tr><td>5</td><td>Disokong tanpa keperluan pengganti</td></tr>` }
+        { 
+            id: 'p1', 
+            title: 'P1: Alasan Pertukaran', 
+            desc: 'Menilai asas dan keperluan pemohon berpindah. Keutamaan tinggi diberikan kepada ancaman keselamatan diri, masalah kesihatan kritikal, atau penyatuan suami isteri (PJJ).',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / kesihatan</td></tr>` 
+        },
+        { 
+            id: 'p2', 
+            title: 'P2: Tempoh di Fasiliti Semasa', 
+            desc: 'Tempoh perkhidmatan kumulatif pegawai di stesen penempatan semasa. Pegawai yang telah lama berkhidmat di satu fasiliti diberikan keutamaan mobilisasi.',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` 
+        },
+        { 
+            id: 'p3', 
+            title: 'P3: Beban Logistik & Jarak (Kediaman ke Fasiliti Diminta)', 
+            desc: 'Jarak pemanduan sehala antara alamat kediaman pegawai / kediaman pasangan PJJ ke fasiliti bertugas yang diminta. Kategori laluan pedalaman/berbukit menerima pertimbangan skor tambahan.',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Pedalaman/Berbukit</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>>300km / Antara negeri</td><td>151km - 300km</td></tr>` 
+        },
+        { 
+            id: 'p4', 
+            title: 'P4: Tanggungan Anak (Kuantiti)', 
+            desc: 'Bilangan anak kandung/anak angkat sah di bawah tanggungan pegawai. Beban pengurusan isi rumah meningkat mengikut bilangan anak.',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Seorang anak</td></tr><tr><td>3</td><td>2 orang anak</td></tr><tr><td>4</td><td>3 orang anak</td></tr><tr><td>5</td><td>≥ 4 orang anak</td></tr>` 
+        },
+        { 
+            id: 'p5', 
+            title: 'P5: Tanggungan Anak (Umur)', 
+            desc: 'Peringkat umur dan kebergantungan anak. Anak berkeperluan khas (OKU) atau anak kecil pra-sekolah memerlukan kehadiran ibu bapa yang lebih dekat.',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Anak sekolah menengah</td></tr><tr><td>3</td><td>Pelbagai peringkat (menengah & rendah)</td></tr><tr><td>4</td><td>Anak kecil (bayi/pra-sekolah/rendah)</td></tr><tr><td>5</td><td>Anak berkeperluan khas (OKU)</td></tr>` 
+        },
+        { 
+            id: 'p6', 
+            title: 'P6: Tanggungan Lain (Pasangan / Ibu Bapa)', 
+            desc: 'Keperluan menjaga pasangan atau ibu bapa kandung/mertua yang menghidap penyakit kronik atau terlantar mengikut pengesahan perubatan.',
+            scale: [1, 2, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada keperluan penjagaan</td></tr><tr><td>2</td><td>Menjaga (Sihat tetapi perlu pemantauan)</td></tr><tr><td>3</td><td>Menjaga (Penyakit kronik terkawal)</td></tr><tr><td>4</td><td>Menjaga uzur (Pergerakan terhad)</td></tr><tr><td>5</td><td>Menjaga uzur (Terlantar/ kritikal)</td></tr>` 
+        },
+        { 
+            id: 'p7', 
+            title: 'P7: Implikasi Penempatan (Tanpa Pengganti)', 
+            desc: 'Kesan operasi terhadap fasiliti sedia ada sekiranya pegawai bertukar keluar tanpa pengganti serentak.',
+            scale: [1, 3, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Keperluan kritikal mobilisasi, jejas operasi</td></tr><tr><td>3</td><td>Perlu pelarasan tugas berkala</td></tr><tr><td>5</td><td>Beban kerja boleh diserap staf sedia ada</td></tr>` 
+        },
+        { 
+            id: 'p8', 
+            title: 'P8: Kelangsungan Perkhidmatan', 
+            desc: 'Kebolehan jabatan mengekalkan perkhidmatan farmasi teras (contoh: MTAC, CDR, Stor, Kaunter) sekiranya pemohon dilepaskan.',
+            scale: [1, 3, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Terpaksa tutup perkhidmatan (Cth: MTAC)</td></tr><tr><td>3</td><td>Skop dihadkan / Tugas pentadbiran tertangguh</td></tr><tr><td>5</td><td>Perkhidmatan teras diteruskan seperti biasa</td></tr>` 
+        },
+        { 
+            id: 'p9', 
+            title: 'P9: Perakuan Pengurusan', 
+            desc: 'Syor dan perakuan akhir daripada pihak pentadbiran fasiliti terhadap status pelepasan pemohon.',
+            scale: [1, 3, 4, 5], 
+            ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tidak disokong atas keperluan perkhidmatan</td></tr><tr><td>3</td><td>Disokong dengan pengganti serentak</td></tr><tr><td>4</td><td>Disokong dengan pengganti kemudian</td></tr><tr><td>5</td><td>Disokong tanpa keperluan pengganti</td></tr>` 
+        }
     ];
 
     const scoreContainer = document.getElementById('scoringContainer');
@@ -696,6 +793,7 @@
         scoreContainer.innerHTML += `
             <div class="card">
                 <div class="card-title">${p.title}</div>
+                <div class="card-desc">${p.desc}</div>
                 <div class="table-responsive"><table class="ref-table">${p.ref}</table></div>
                 ${p.id === 'p3' ? '<div id="p3Hint" class="p3-hint"></div>' : ''}
                 <div class="likert-wrapper" style="grid-template-columns: repeat(${p.scale.length}, 1fr);">${likert}</div>
@@ -736,7 +834,7 @@
         var email = (payload.email || '').toLowerCase();
 
         if (!email.endsWith('@moh.gov.my')) {
-            alert("Akses Ditolak: Sila gunakan akaun e-mel rasmi Kementerian Kesihatan Malaysia (@moh.gov.my).");
+            alert("Akses Ditolak: Sila log masuk menggunakan akaun e-mel rasmi Kementerian Kesihatan Malaysia (@moh.gov.my).");
             return;
         }
 
@@ -805,6 +903,7 @@
             nama: document.getElementById('nama').value, 
             kp: document.getElementById('kp').value, 
             gred: document.getElementById('gred').value,
+            alamatKediaman: document.getElementById('alamatKediaman').value,
             ptjSemasa: document.getElementById('ptjSemasa').value,
             fasilitiSemasa: document.getElementById('val_fasilitiSemasa') ? document.getElementById('val_fasilitiSemasa').value : document.getElementById('ptjSemasa').value,
             ptjDiminta: document.getElementById('ptjDiminta').value,
@@ -825,6 +924,7 @@
                 showToast(`Selesai! ID Rujukan: ${data.id}. Salinan PDF dihantar ke ${emailVerified}.`, 'success');
                 this.reset();
                 logoutGoogle();
+                handlePenilaiPTjChange();
                 if (window.Jarak) Jarak.reset();
                 document.getElementById('scoreTrackerBox').style.display = 'none';
                 document.getElementById('wrap_fasilitiSemasa').style.display = 'none';
@@ -941,7 +1041,7 @@
     const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
     const BPF_NAME = 'Bahagian Perkhidmatan Farmasi';
     const HAS_MAP = typeof L !== 'undefined';
-    const DEFAULT_MSG = 'Pilih fasiliti semasa dan fasiliti diminta untuk mengira jarak secara automatik.';
+    const DEFAULT_MSG = 'Cari lokasi kediaman dan pilih fasiliti diminta untuk mengira jarak secara automatik.';
 
     const HOSPITAL_MAP = {
         'HTAA Kuantan': 'Hospital Tengku Ampuan Afzan (HTAA)', 'HOSHAS Temerloh': 'Hospital Sultan Haji Ahmad Shah',
@@ -952,6 +1052,9 @@
     };
 
     let facilities = []; let byKey = {}; let loadState = 'loading'; const routeCache = new Map();
+    let homeLoc = null; // Menyimpan koordinat kediaman pemohon
+    let formMap = null, formLayer = null, homeMarker = null, formToken = 0, current = null;
+
     const $ = id => document.getElementById(id);
     const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
@@ -1024,19 +1127,10 @@
     }
 
     function makeMap(id, wheelZoom) {
-        const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.75, 102.75], 8);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(m); return m;
+        const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.8168, 103.3317], 8);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(m); 
+        return m;
     }
-
-    function drawRoute(map, layer, a, b, line) {
-        layer.clearLayers();
-        L.circleMarker([a.lat, a.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#059669', fillOpacity: 1 }).bindTooltip('Asal: ' + esc(a.name)).addTo(layer);
-        L.circleMarker([b.lat, b.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#DC2626', fillOpacity: 1 }).bindTooltip('Destinasi: ' + esc(b.name)).addTo(layer);
-        if (line && line.length) { L.polyline(line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(layer); map.fitBounds(L.latLngBounds(line), { padding: [30, 30] }); } 
-        else { map.fitBounds(L.latLngBounds([[a.lat, a.lng], [b.lat, b.lng]]), { padding: [40, 40], maxZoom: 13 }); }
-    }
-
-    let formMap = null, formLayer = null, formToken = 0, current = null;
 
     function resolveForm(type) {
         const ptjEl = $('ptj' + type); const ptj = ptjEl ? ptjEl.value : '';
@@ -1054,20 +1148,13 @@
 
     function setResult(html, isErr) { const el = $('jarakResult'); el.innerHTML = html; el.classList.toggle('is-error', !!isErr); }
 
-    function showFormMapFor(a, b, line) {
-        if (!HAS_MAP) return; $('formMap').style.display = 'block';
-        if (!formMap) { formMap = makeMap('formMap', false); formLayer = L.layerGroup().addTo(formMap); }
-        formMap.invalidateSize(); drawRoute(formMap, formLayer, a, b, line);
-    }
-    function hideFormMap() { $('formMap').style.display = 'none'; }
-
     function renderHint() {
         const el = $('p3Hint'); if (!el) return;
         if (!current || !current.reliable) { el.innerHTML = ''; el.classList.remove('diff'); return; }
         const interior = checkedValue('routeType') === 'interior'; const band = p3Band(current.km, interior);
         const chosen = document.querySelector('input[name="p3_score"]:checked'); const differs = !!chosen && +chosen.value !== band;
         el.classList.toggle('diff', differs);
-        el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km, laluan ' +
+        el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km dari kediaman, laluan ' +
             (interior ? 'pedalaman/berbukit' : 'biasa') + '.' + (differs ? ' <strong>Pilihan semasa berbeza daripada cadangan.</strong>' : '');
     }
 
@@ -1079,35 +1166,133 @@
         renderHint();
     }
 
+    // Melukis laluan Kediaman -> Fasiliti Diminta di atas peta
+    function drawHomeToFacility(home, dest, line) {
+        if (!HAS_MAP) return;
+        $('formMap').style.display = 'block';
+        if (!formMap) {
+            formMap = makeMap('formMap', false);
+            formLayer = L.layerGroup().addTo(formMap);
+            
+            // Klik pada peta untuk ubah lokasi kediaman
+            formMap.on('click', function(e) {
+                homeLoc = { lat: e.latlng.lat, lng: e.latlng.lng, name: 'Lokasi Pilihan di Peta' };
+                updateForm();
+            });
+        }
+        formMap.invalidateSize();
+        formLayer.clearLayers();
+
+        // Marker Kediaman (Oren)
+        homeMarker = L.circleMarker([home.lat, home.lng], { 
+            radius: 10, color: '#0B2447', weight: 3, fillColor: '#F59E0B', fillOpacity: 1 
+        }).bindTooltip('Kediaman: ' + esc(home.name || 'Lokasi Dipilih')).addTo(formLayer);
+
+        // Marker Fasiliti Diminta (Merah)
+        if (dest) {
+            L.circleMarker([dest.lat, dest.lng], { 
+                radius: 10, color: '#0B2447', weight: 3, fillColor: '#DC2626', fillOpacity: 1 
+            }).bindTooltip('Fasiliti Diminta: ' + esc(dest.name)).addTo(formLayer);
+        }
+
+        if (line && line.length) {
+            L.polyline(line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(formLayer);
+            formMap.fitBounds(L.latLngBounds(line), { padding: [35, 35] });
+        } else if (dest) {
+            formMap.fitBounds(L.latLngBounds([[home.lat, home.lng], [dest.lat, dest.lng]]), { padding: [40, 40], maxZoom: 13 });
+        } else {
+            formMap.setView([home.lat, home.lng], 12);
+        }
+    }
+
     async function updateForm() {
         const token = ++formToken; current = null;
         if (loadState === 'loading') { setResult('Memuatkan data...'); return renderHint(); }
-        if (loadState === 'error') { setResult('Data lokasi fasiliti tidak dapat dimuatkan.', true); return renderHint(); }
-        const A = resolveForm('Semasa'), B = resolveForm('Diminta');
-        if (A.state === 'empty' || B.state === 'empty') { setResult(DEFAULT_MSG); hideFormMap(); return renderHint(); }
-        if (A.state === 'nocoord' || B.state === 'nocoord') {
-            const bad = A.state === 'nocoord' ? A : B; setResult('Lokasi &ldquo;' + esc(bad.label) + '&rdquo; tiada dalam pangkalan data. Skor P3 tidak diisi automatik.'); hideFormMap(); return renderHint();
+        if (loadState === 'error') { setResult('Pangkalan data fasiliti gagal dimuatkan.', true); return renderHint(); }
+        
+        const B = resolveForm('Diminta');
+        
+        if (!homeLoc && B.state === 'empty') {
+            setResult(DEFAULT_MSG);
+            $('formMap').style.display = 'none';
+            return renderHint();
         }
-        if (A.f === B.f) {
-            current = { km: 0, minutes: 0, source: 'Lokasi sama', reliable: true };
-            setResult('<span class="km">0 km</span> &middot; fasiliti semasa dan diminta ialah lokasi yang sama.');
-            showFormMapFor(A.f, B.f, null); return applyP3();
+
+        if (!homeLoc) {
+            setResult('Sila masukkan alamat kediaman pegawai di bahagian atas untuk memulakan kiraan jarak.');
+            return renderHint();
         }
-        setResult('Mengira laluan...'); showFormMapFor(A.f, B.f, null); let r = null;
-        try { r = await getRoute(A.f, B.f); } catch (e) {}
+
+        if (B.state === 'empty') {
+            setResult('Kediaman ditetapkan: <strong>' + esc(homeLoc.name) + '</strong>. Sila pilih fasiliti diminta.');
+            drawHomeToFacility(homeLoc, null, null);
+            return renderHint();
+        }
+
+        if (B.state === 'nocoord') {
+            setResult('Lokasi fasiliti &ldquo;' + esc(B.label) + '&rdquo; tiada dalam rekod peta. Skor P3 tidak dapat diisi automatik.', true);
+            return renderHint();
+        }
+
+        setResult('Mengira laluan pemanduan jalan raya...');
+        drawHomeToFacility(homeLoc, B.f, null);
+        
+        let r = null;
+        try { r = await getRoute(homeLoc, B.f); } catch (e) {}
         if (token !== formToken) return;
 
         if (r && r.ok) {
             current = { km: r.km, minutes: r.minutes, source: 'OSRM', reliable: true };
-            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; ' + fmtMinutes(r.minutes)); showFormMapFor(A.f, B.f, r.line); applyP3();
+            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; ' + fmtMinutes(r.minutes) + ' (Dari: ' + esc(homeLoc.name) + ')');
+            drawHomeToFacility(homeLoc, B.f, r.line);
+            applyP3();
         } else {
-            const km = haversineKm(A.f, B.f); current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
+            const km = haversineKm(homeLoc, B.f);
+            current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
             setResult('Jarak garis lurus &asymp; <span class="km">' + km.toFixed(1) + ' km</span>. Skor P3 tidak diisi automatik.', true);
         }
         renderHint();
     }
+
     const scheduleUpdate = debounce(() => { updateForm(); }, 250);
-    function invalidate() { const hadResult = !!current; formToken++; current = null; if (hadResult) setResult('Mengira laluan...'); renderHint(); }
+
+    // Carian Geocoding Alamat Kediaman (Nominatim)
+    async function searchHome() {
+        const query = $('alamatKediaman').value.trim();
+        if (!query) {
+            showToast('Sila masukkan nama taman, jalan atau bandar.', 'error');
+            return;
+        }
+
+        const btn = $('btnCariRumah');
+        btn.innerText = 'Mencari...';
+        btn.disabled = true;
+
+        try {
+            const url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=my&q=' + encodeURIComponent(query + ', Pahang');
+            const res = await fetch(url, { headers: { 'Accept-Language': 'ms,en' } });
+            const list = await res.json();
+            
+            if (list && list.length > 0) {
+                const item = list[0];
+                homeLoc = {
+                    lat: parseFloat(item.lat),
+                    lng: parseFloat(item.lon),
+                    name: query
+                };
+                showToast('Lokasi kediaman ditemui: ' + item.display_name.split(',')[0], 'success');
+                updateForm();
+            } else {
+                showToast('Alamat tidak ditemui. Sila cuba kata kunci nama jalan / taman / bandar yang lain.', 'error');
+            }
+        } catch (e) {
+            showToast('Ralat rangkaian carian lokasi kediaman.', 'error');
+        } finally {
+            btn.innerText = 'Cari Lokasi';
+            btn.disabled = false;
+        }
+    }
+
     function enhance(type) {
         const ptj = $('ptj' + type).value; const box = $('container_fasiliti' + type);
         if (ptj.indexOf('PKD') === 0 && loadState === 'ready') {
@@ -1115,18 +1300,36 @@
             const opts = facilities.filter(f => f.district === district && !f.hub).map(f => '<option value="' + esc(f.name) + '"></option>').join('');
             box.innerHTML = '<input type="text" id="val_fasiliti' + type + '" required list="dl_fasiliti' + type + '" autocomplete="off" placeholder="Klinik Kesihatan (Cth: KK Beserah)"><datalist id="dl_fasiliti' + type + '">' + opts + '</datalist>';
         }
-        const el = $('val_fasiliti' + type); if (el && el.type === 'text') el.addEventListener('input', () => { invalidate(); scheduleUpdate(); });
-        invalidate(); scheduleUpdate();
+        const el = $('val_fasiliti' + type); if (el && el.type === 'text') el.addEventListener('input', () => { scheduleUpdate(); });
+        scheduleUpdate();
     }
+
     function payloadFields() {
         const interior = checkedValue('routeType') === 'interior';
-        return { jarakKm: current ? Math.round(current.km * 10) / 10 : '', jarakSumber: current ? current.source : '', jenisLaluan: interior ? 'Pedalaman/Berbukit' : 'Biasa', p3Cadangan: current && current.reliable ? p3Band(current.km, interior) : '' };
+        return { 
+            jarakKm: current ? Math.round(current.km * 10) / 10 : '', 
+            jarakSumber: current ? current.source : '', 
+            jenisLaluan: interior ? 'Pedalaman/Berbukit' : 'Biasa', 
+            p3Cadangan: current && current.reliable ? p3Band(current.km, interior) : '' 
+        };
     }
-    function reset() { formToken++; current = null; setResult(DEFAULT_MSG); hideFormMap(); if (formLayer) formLayer.clearLayers(); renderHint(); }
+
+    function reset() { 
+        formToken++; current = null; homeLoc = null; 
+        setResult(DEFAULT_MSG); 
+        $('formMap').style.display = 'none'; 
+        if (formLayer) formLayer.clearLayers(); 
+        renderHint(); 
+    }
 
     const form = $('operasiForm');
-    if (form) form.addEventListener('change', e => { const n = e.target && e.target.name; if (n === 'routeType') applyP3(); else if (n === 'p3_score') renderHint(); });
+    if (form) form.addEventListener('change', e => { 
+        const n = e.target && e.target.name; 
+        if (n === 'routeType') applyP3(); 
+        else if (n === 'p3_score') renderHint(); 
+    });
 
+    // Kalkulator Jarak Papan Tab #jarak
     let toolMap = null, toolRouteLayer = null, toolToken = 0, toolCurrent = null, toolReady = false; const TOOL_DEFAULT = 'Pilih asal dan destinasi, atau klik penanda pada peta.';
     function renderToolStats() {
         const c = toolCurrent; if (!c) { $('toolKm').textContent = '–'; $('toolTime').textContent = '–'; $('toolP3').textContent = '–'; return; }
@@ -1137,12 +1340,26 @@
         const from = $('toolFrom').value, to = $('toolTo').value; const msg = $('toolMsg');
         if (from === '' || to === '') { msg.textContent = TOOL_DEFAULT; return; }
         const a = facilities[+from], b = facilities[+to]; if (a === b) { toolCurrent = { km: 0, minutes: 0, reliable: true }; renderToolStats(); msg.textContent = 'Fasiliti sama.'; return; }
-        msg.textContent = 'Mengira laluan...'; if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, null); let r = null;
+        msg.textContent = 'Mengira laluan...'; 
+        let r = null;
         try { r = await getRoute(a, b); } catch (e) {} if (token !== toolToken) return;
-        if (r && r.ok) { toolCurrent = { km: r.km, minutes: r.minutes, reliable: true }; msg.textContent = a.name + ' → ' + b.name; if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, r.line); } 
-        else { toolCurrent = { km: haversineKm(a, b), minutes: null, reliable: false }; msg.textContent = 'Jarak garis lurus (anggaran kasar).'; }
+        if (r && r.ok) { 
+            toolCurrent = { km: r.km, minutes: r.minutes, reliable: true }; 
+            msg.textContent = a.name + ' → ' + b.name; 
+            if (toolMap) {
+                toolRouteLayer.clearLayers();
+                L.circleMarker([a.lat, a.lng], { radius: 8, color: '#0B2447', weight: 2, fillColor: '#059669', fillOpacity: 1 }).addTo(toolRouteLayer);
+                L.circleMarker([b.lat, b.lng], { radius: 8, color: '#0B2447', weight: 2, fillColor: '#DC2626', fillOpacity: 1 }).addTo(toolRouteLayer);
+                L.polyline(r.line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(toolRouteLayer);
+                toolMap.fitBounds(L.latLngBounds(r.line), { padding: [30, 30] });
+            }
+        } else { 
+            toolCurrent = { km: haversineKm(a, b), minutes: null, reliable: false }; 
+            msg.textContent = 'Jarak garis lurus (anggaran kasar).'; 
+        }
         renderToolStats();
     }
+
     function initTool() {
         if (toolReady || loadState !== 'ready') return; toolReady = true;
         const districts = Array.from(new Set(facilities.map(f => f.district))).sort();
@@ -1158,12 +1375,31 @@
             if (pts.length) toolMap.fitBounds(pts, { padding: [20, 20] });
         }
     }
+
     function pick(i, which) { if (!toolReady) return; $(which === 'from' ? 'toolFrom' : 'toolTo').value = String(i); if (toolMap) toolMap.closePopup(); updateTool(); }
-    function onRoute(hash) { if (hash === '#jarak') { if (loadState === 'ready') initTool(); setTimeout(() => { if (toolMap) toolMap.invalidateSize(); }, 80); } else if (hash === '#borang' || hash === '') { setTimeout(() => { if (formMap) formMap.invalidateSize(); }, 80); } }
-    window.Jarak = { enhance, reset, payloadFields, onRoute, pick };
+    function onRoute(hash) { 
+        if (hash === '#jarak') { 
+            if (loadState === 'ready') initTool(); 
+            setTimeout(() => { if (toolMap) toolMap.invalidateSize(); }, 80); 
+        } else if (hash === '#borang' || hash === '') { 
+            setTimeout(() => { if (formMap) formMap.invalidateSize(); }, 80); 
+        } 
+    }
+
+    window.Jarak = { enhance, reset, payloadFields, onRoute, pick, searchHome };
+    
     (async function load() {
-        try { const res = await fetch(DATA_URL, { cache: 'no-cache' }); if (!res.ok) throw new Error('HTTP'); facilities = parseFacilities(await res.text()); facilities.forEach(f => { byKey[norm(f.name)] = f; }); loadState = 'ready'; } 
-        catch (e) { loadState = 'error'; } scheduleUpdate(); if (location.hash === '#jarak') onRoute('#jarak');
+        try { 
+            const res = await fetch(DATA_URL, { cache: 'no-cache' }); 
+            if (!res.ok) throw new Error('HTTP'); 
+            facilities = parseFacilities(await res.text()); 
+            facilities.forEach(f => { byKey[norm(f.name)] = f; }); 
+            loadState = 'ready'; 
+        } catch (e) { 
+            loadState = 'error'; 
+        } 
+        scheduleUpdate(); 
+        if (location.hash === '#jarak') onRoute('#jarak');
     })();
 })();
 </script>
