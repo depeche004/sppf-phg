@@ -57,7 +57,7 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 16px; }
         label { font-weight: 600; display: block; margin-bottom: 6px; color: var(--brand-navy); font-size: 0.9rem; }
-        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.3s; background: rgba(248, 250, 252, 0.8); }
+        input[type="text"], input[type="email"], input[type="number"], select, textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.3s; background: rgba(248, 250, 252, 0.8); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand-blue); background: var(--surface); box-shadow: 0 0 0 3px rgba(25, 55, 109, 0.1); }
         
         .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
@@ -151,21 +151,10 @@
         .pop-actions { display: flex; gap: 6px; margin-top: 8px; }
         .pop-actions button { flex: 1; background: var(--brand-navy); color: #fff; border: none; border-radius: 4px; padding: 6px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
         @media (max-width: 768px) { .jarak-grid, .jarak-stats { grid-template-columns: 1fr; } .map-box { height: 280px; } .tools-map { height: 400px; } .nav-btn { padding: 14px 10px; font-size: 0.82rem; } }
-
-        /* Mobile Adjustments */
-        @media (max-width: 768px) { 
-            .form-grid { grid-template-columns: 1fr; } 
-            .card { padding: 20px; }
-            .header-banner { padding: 30px 15px; }
-            .likert-wrapper { gap: 6px; }
-            .likert-tile { padding: 10px 0; font-size: 1.1rem; }
-            .score-tracker { flex-direction: column; align-items: flex-start; gap: 10px; top: 60px;}
-        }
     </style>
 </head>
 <body>
 
-<!-- Animated Background Layer -->
 <div class="animated-bg">
     <ul class="circles">
         <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
@@ -173,7 +162,7 @@
 </div>
 
 <nav class="app-nav">
-    <button class="nav-btn active" onclick="navigate('#borang')">Borang Penilaian KJF/PFK/KC</button>
+    <button class="nav-btn active" onclick="navigate('#borang')">Borang Penilaian KJF</button>
     <button class="nav-btn" onclick="navigate('#jarak')">Kalkulator Jarak</button>
     <button class="nav-btn" onclick="navigate('#admin')">Pangkalan Data (Admin)</button>
 </nav>
@@ -185,7 +174,6 @@
 </div>
 
 <div class="container">
-    <!-- FORM SECTION -->
     <div id="borangView" class="view-section active">
         
         <div class="score-tracker" id="scoreTrackerBox" style="display:none;">
@@ -210,11 +198,11 @@
                         <label>Gred Jawatan</label>
                         <select id="gred" required>
                             <option value="">-- Sila Pilih --</option>
-                            <option value="UF9">UF9</option>
-                            <option value="UF10">UF10</option>
-                            <option value="UF12">UF12</option>
-                            <option value="UF13">UF13</option>
-                            <option value="UF14">UF14</option>
+                            <option value="UF41">UF41</option>
+                            <option value="UF44">UF44</option>
+                            <option value="UF48">UF48</option>
+                            <option value="UF52">UF52</option>
+                            <option value="UF54">UF54</option>
                         </select>
                     </div>
                 </div>
@@ -326,7 +314,6 @@
                 </div>
             </div>
 
-            <!-- Scoring Parameters -->
             <div id="scoringContainer"></div>
 
             <!-- 3. Maklumat Tambahan -->
@@ -369,6 +356,12 @@
             <!-- 4. Ulasan KJF -->
             <div class="card">
                 <div class="card-title">4. Ulasan Ketua Jabatan</div>
+                
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label>E-mel Salinan Penilai (Untuk resit PDF)</label>
+                    <input type="email" id="email_penilai" required placeholder="Cth: nama@moh.gov.my">
+                </div>
+
                 <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Sekiranya terdapat keperluan mendesak untuk menyokong permohonan walaupun mencatatkan skor yang rendah, sila kemukakan justifikasi.</p>
                 <textarea id="ulasan_kjf" rows="4" placeholder="Ulasan pengurusan dan penutup..."></textarea>
             </div>
@@ -513,9 +506,9 @@
 </div>
 
 <script>
+    // GANTIKAN URL DI BAWAH JIKA WEB APP BARU DIJANA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzw2jFzKF-aRmEDxt-5J4jF39_9RbJlqXP0EdzLdosmuBJslOi6eeNaW1zOjqExvY66fw/exec';
 
-    // Utilities
     function toggleInput(id, show) { document.getElementById(id).style.display = show ? 'block' : 'none'; }
     
     function showToast(message, type = 'info') {
@@ -530,7 +523,6 @@
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4500);
     }
 
-    // Routing
     function navigate(hash) { window.location.hash = hash; }
     window.addEventListener('hashchange', handleRoute);
     window.addEventListener('load', () => { if(!window.location.hash) window.location.hash = '#borang'; handleRoute(); });
@@ -556,7 +548,6 @@
         if (window.Jarak) Jarak.onRoute(hash);
     }
 
-    // Cascading Dropdown
     function handleFasiliti(type) {
         const ptjVal = document.getElementById(`ptj${type}`).value;
         const wrap = document.getElementById(`wrap_fasiliti${type}`);
@@ -583,7 +574,6 @@
         if (window.Jarak) Jarak.enhance(type);
     }
 
-    // Rubrics Generation
     const paramData = [
         { id: 'p1', title: 'P1: Alasan Pertukaran', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / kesihatan</td></tr>` },
         { id: 'p2', title: 'P2: Tempoh di Fasiliti Semasa', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` },
@@ -613,7 +603,6 @@
             </div>`;
     });
 
-    // Realtime Tracker Logic
     document.getElementById('operasiForm').addEventListener('change', function(e) {
         if(e.target.classList.contains('score-input')) {
             document.getElementById('scoreTrackerBox').style.display = 'flex';
@@ -633,11 +622,10 @@
         }
     });
 
-    // Form Submit
     document.getElementById('operasiForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
-        btn.innerText = 'Memproses Permohonan...';
+        btn.innerText = 'Menjana PDF & E-mel...';
         btn.style.opacity = '0.7';
 
         let total = 0; let scores = {};
@@ -647,21 +635,19 @@
             total += val;
         }
 
-        // Get Tatatertib
         let tata = document.querySelector('input[name="tatatertib_status"]:checked').value;
         if(tata === 'Ya') tata = 'Ya: ' + document.getElementById('tatatertib_nota').value;
 
-        // Get Latih Baru
         let latih = document.querySelector('input[name="latih_status"]:checked').value;
         if(latih === 'Ya') latih = 'Ya: ' + document.getElementById('latih_nota').value;
 
-        // Get Dokumen
         let docs = [];
         document.querySelectorAll('input[name="dokumen"]:checked').forEach(cb => docs.push(cb.value));
         if(document.getElementById('chk_lain').checked) docs.push(document.getElementById('dokumen_lain').value);
 
         let payload = {
             action: 'create',
+            emailPenilai: document.getElementById('email_penilai').value,
             nama: document.getElementById('nama').value, kp: document.getElementById('kp').value, gred: document.getElementById('gred').value,
             ptjSemasa: document.getElementById('ptjSemasa').value,
             fasilitiSemasa: document.getElementById('val_fasilitiSemasa') ? document.getElementById('val_fasilitiSemasa').value : document.getElementById('ptjSemasa').value,
@@ -676,7 +662,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.result === 'success') {
-                showToast(`Selesai! ID Rujukan: ${data.id}`, 'success');
+                showToast(`Selesai! ID Rujukan: ${data.id}. Salinan PDF dihantar ke e-mel.`, 'success');
                 this.reset();
                 if (window.Jarak) Jarak.reset();
                 document.getElementById('scoreTrackerBox').style.display = 'none';
@@ -689,9 +675,7 @@
         .finally(() => { btn.innerText = 'Hantar & Rekod Data Penilaian'; btn.style.opacity = '1'; });
     });
 
-    // Dashboard Logic
     let globalData = [];
-    
     function checkAdmin() {
         if(document.getElementById('adminPwd').value === 'admin123') {
             document.getElementById('adminLogin').style.display = 'none';
@@ -753,16 +737,13 @@
     function filterTable() {
         let yFilter = document.getElementById('filterTahun').value;
         let pFilter = document.getElementById('filterPTj').value;
-        
         let filtered = globalData.filter(row => {
             let rowYear = new Date(row.date).getFullYear().toString();
             let passY = (yFilter === 'ALL') || (rowYear === yFilter);
-            
             let passP = true;
             if(pFilter === 'Hospital') passP = row.ptjDiminta.includes('H.');
             if(pFilter === 'PKD') passP = row.ptjDiminta.includes('PKD');
             if(pFilter === 'Bahagian') passP = row.ptjDiminta.includes('Bahagian') || row.ptjDiminta.includes('Cawangan');
-            
             return passY && passP;
         });
         renderTable(filtered);
@@ -771,9 +752,7 @@
     function updateStatus(id, selectElement) {
         const newStatus = selectElement.value;
         selectElement.style.opacity = '0.5';
-        
         let payload = { action: 'updateStatus', id: id, status: newStatus };
-        
         fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(data => {
@@ -788,7 +767,6 @@
         }).finally(() => { selectElement.style.opacity = '1'; });
     }
 
-    // Modal Handlers
     function openModal(modalId) { document.getElementById(modalId).style.display = "block"; }
     function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
     window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
@@ -796,45 +774,23 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
-/* ============================================================================
-   MODUL JARAK PEMANDUAN
-   - Data fasiliti : Pahang_Healthcare_Facilities_Data_Updated.csv (folder yang sama dengan laman ini)
-                     Lajur wajib: Name, District, Latitude, Longitude. Lajur lain diabaikan.
-   - Laluan        : OSRM demo server (router.project-osrm.org) - untuk penggunaan ringan sahaja
-   - Peta          : Leaflet + OpenStreetMap
-   Skrip ini sengaja diasingkan: jika ia gagal dimuat, borang penilaian tetap berfungsi.
-   ============================================================================ */
 (function () {
     'use strict';
-
     const DATA_URL = 'Pahang_Healthcare_Facilities_Data_Updated.csv';
     const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
     const BPF_NAME = 'Bahagian Perkhidmatan Farmasi';
     const HAS_MAP = typeof L !== 'undefined';
     const DEFAULT_MSG = 'Pilih fasiliti semasa dan fasiliti diminta untuk mengira jarak secara automatik.';
 
-    // Nilai dropdown borang -> lajur "Name" dalam CSV
     const HOSPITAL_MAP = {
-        'HTAA Kuantan': 'Hospital Tengku Ampuan Afzan (HTAA)',
-        'HOSHAS Temerloh': 'Hospital Sultan Haji Ahmad Shah',
-        'H. Kuala Lipis': 'Hospital Kuala Lipis',
-        'H. Bentong': 'Hospital Bentong',
-        'H. Raub': 'Hospital Raub',
-        'H. Jerantut': 'Hospital Jerantut',
-        'H. Jengka': 'Hospital Jengka',
-        'H. Pekan': 'Hospital Pekan',
-        'H. Muadzam Shah': 'Hospital Muadzam Shah',
-        'H. Sultanah Hajjah Kalsom': 'Hospital Sultanah Hajjah Kalsom',
-        'H. Rompin': 'Hospital Rompin',
-        'H. Bera': 'Hospital Bera'
+        'HTAA Kuantan': 'Hospital Tengku Ampuan Afzan (HTAA)', 'HOSHAS Temerloh': 'Hospital Sultan Haji Ahmad Shah',
+        'H. Kuala Lipis': 'Hospital Kuala Lipis', 'H. Bentong': 'Hospital Bentong', 'H. Raub': 'Hospital Raub',
+        'H. Jerantut': 'Hospital Jerantut', 'H. Jengka': 'Hospital Jengka', 'H. Pekan': 'Hospital Pekan',
+        'H. Muadzam Shah': 'Hospital Muadzam Shah', 'H. Sultanah Hajjah Kalsom': 'Hospital Sultanah Hajjah Kalsom',
+        'H. Rompin': 'Hospital Rompin', 'H. Bera': 'Hospital Bera'
     };
 
-    let facilities = [];
-    let byKey = {};              // nama (huruf kecil) -> fasiliti
-    let loadState = 'loading';   // loading | ready | error
-    const routeCache = new Map();
-
-    /* ---------- utiliti ---------- */
+    let facilities = []; let byKey = {}; let loadState = 'loading'; const routeCache = new Map();
     const $ = id => document.getElementById(id);
     const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
@@ -865,19 +821,17 @@
         if (!rows.length) throw new Error('CSV kosong');
         const head = rows[0].map(h => h.trim());
         const iName = head.indexOf('Name'), iDist = head.indexOf('District'), iLat = head.indexOf('Latitude'), iLng = head.indexOf('Longitude');
-        if ([iName, iDist, iLat, iLng].includes(-1)) throw new Error('Lajur Name/District/Latitude/Longitude tidak lengkap');
+        if ([iName, iDist, iLat, iLng].includes(-1)) throw new Error('Lajur tidak lengkap');
         const out = [];
         rows.slice(1).forEach((r, n) => {
             const f = { name: (r[iName] || '').trim(), district: (r[iDist] || '').trim(), lat: parseFloat(r[iLat]), lng: parseFloat(r[iLng]) };
             const valid = f.name && isFinite(f.lat) && isFinite(f.lng) && f.lat >= 1 && f.lat <= 7 && f.lng >= 99 && f.lng <= 105;
-            if (!valid) { console.warn('[Jarak] Baris ' + (n + 2) + ' dilangkau (nama/koordinat tidak sah): ' + (r[iName] || '?')); return; }
-            f.hub = /^(Hospital|Bahagian)\b/.test(f.name);
-            out.push(f);
+            if (!valid) return;
+            f.hub = /^(Hospital|Bahagian)\b/.test(f.name); out.push(f);
         });
         return out;
     }
 
-    /* ---------- pengiraan ---------- */
     function haversineKm(a, b) {
         const R = 6371, rad = x => x * Math.PI / 180;
         const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
@@ -885,336 +839,170 @@
         return 2 * R * Math.asin(Math.sqrt(h));
     }
 
-    // Jadual P3. Jarak dibundarkan ke km terdekat supaya tiada jurang antara "30 km" dan "31 km".
-    // Laluan biasa      : <=30 -> 1 | 31-70 -> 2 | 71-150 -> 3 | 151-300 -> 4 | >300 -> 5
-    // Pedalaman/berbukit: <=30 -> 2 | 31-70 -> 3 | 71-150 -> 4 | >150 -> 5
     function p3Band(km, interior) {
-        if (km < 0.1) return 1;
-        const d = Math.round(km);
+        if (km < 0.1) return 1; const d = Math.round(km);
         const base = d <= 30 ? 1 : d <= 70 ? 2 : d <= 150 ? 3 : d <= 300 ? 4 : 5;
         return interior ? Math.min(5, base + 1) : base;
     }
 
-    function fmtMinutes(m) {
-        m = Math.round(m);
-        return m < 60 ? m + ' min' : Math.floor(m / 60) + ' j ' + (m % 60) + ' min';
-    }
+    function fmtMinutes(m) { m = Math.round(m); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' j ' + (m % 60) + ' min'; }
 
     async function getRoute(a, b) {
         const key = a.lng + ',' + a.lat + ';' + b.lng + ',' + b.lat;
         if (routeCache.has(key)) return routeCache.get(key);
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 12000);
+        const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 12000);
         try {
             const res = await fetch(OSRM_URL + key + '?overview=full&geometries=geojson', { signal: ctrl.signal });
             if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            let out;
+            const data = await res.json(); let out;
             if (data.code === 'Ok' && data.routes && data.routes[0]) {
-                const r = data.routes[0];
-                out = { ok: true, km: r.distance / 1000, minutes: r.duration / 60, line: r.geometry.coordinates.map(c => [c[1], c[0]]) };
-            } else if (data.code === 'NoRoute') {
-                out = { ok: false, reason: 'noroute' };
-            } else {
-                throw new Error(data.code || 'Respons OSRM tidak dijangka');
-            }
-            routeCache.set(key, out);
-            return out;
+                const r = data.routes[0]; out = { ok: true, km: r.distance / 1000, minutes: r.duration / 60, line: r.geometry.coordinates.map(c => [c[1], c[0]]) };
+            } else if (data.code === 'NoRoute') { out = { ok: false, reason: 'noroute' }; } else { throw new Error(data.code || 'OSRM error'); }
+            routeCache.set(key, out); return out;
         } finally { clearTimeout(timer); }
     }
 
-    /* ---------- peta ---------- */
     function makeMap(id, wheelZoom) {
         const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.75, 102.75], 8);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-        }).addTo(m);
-        return m;
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(m); return m;
     }
 
     function drawRoute(map, layer, a, b, line) {
         layer.clearLayers();
         L.circleMarker([a.lat, a.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#059669', fillOpacity: 1 }).bindTooltip('Asal: ' + esc(a.name)).addTo(layer);
         L.circleMarker([b.lat, b.lng], { radius: 9, color: '#0B2447', weight: 3, fillColor: '#DC2626', fillOpacity: 1 }).bindTooltip('Destinasi: ' + esc(b.name)).addTo(layer);
-        if (line && line.length) {
-            L.polyline(line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(layer);
-            map.fitBounds(L.latLngBounds(line), { padding: [30, 30] });
-        } else {
-            map.fitBounds(L.latLngBounds([[a.lat, a.lng], [b.lat, b.lng]]), { padding: [40, 40], maxZoom: 13 });
-        }
+        if (line && line.length) { L.polyline(line, { color: '#19376D', weight: 5, opacity: 0.85 }).addTo(layer); map.fitBounds(L.latLngBounds(line), { padding: [30, 30] }); } 
+        else { map.fitBounds(L.latLngBounds([[a.lat, a.lng], [b.lat, b.lng]]), { padding: [40, 40], maxZoom: 13 }); }
     }
 
-    /* ======================= BORANG PENILAIAN ======================= */
     let formMap = null, formLayer = null, formToken = 0, current = null;
 
     function resolveForm(type) {
-        const ptjEl = $('ptj' + type);
-        const ptj = ptjEl ? ptjEl.value : '';
+        const ptjEl = $('ptj' + type); const ptj = ptjEl ? ptjEl.value : '';
         if (!ptj) return { state: 'empty' };
         let f = null, label = ptj;
-        if (ptj === 'Bahagian Perkhidmatan Farmasi, JKNP') {
-            f = byKey[norm(BPF_NAME)];                       // semua cawangan berada di BPF
-        } else if (HOSPITAL_MAP[ptj]) {
-            f = byKey[norm(HOSPITAL_MAP[ptj])];
-        } else if (ptj.indexOf('PKD') === 0) {
-            const el = $('val_fasiliti' + type);
-            const v = el ? el.value.trim() : '';
+        if (ptj === 'Bahagian Perkhidmatan Farmasi, JKNP') { f = byKey[norm(BPF_NAME)]; } 
+        else if (HOSPITAL_MAP[ptj]) { f = byKey[norm(HOSPITAL_MAP[ptj])]; } 
+        else if (ptj.indexOf('PKD') === 0) {
+            const el = $('val_fasiliti' + type); const v = el ? el.value.trim() : '';
             if (!v) return { state: 'empty' };
-            f = byKey[norm(v)];
-            label = v;
+            f = byKey[norm(v)]; label = v;
         }
         return f ? { state: 'ok', f: f } : { state: 'nocoord', label: label };
     }
 
-    function setResult(html, isErr) {
-        const el = $('jarakResult');
-        el.innerHTML = html;
-        el.classList.toggle('is-error', !!isErr);
-    }
+    function setResult(html, isErr) { const el = $('jarakResult'); el.innerHTML = html; el.classList.toggle('is-error', !!isErr); }
 
     function showFormMapFor(a, b, line) {
-        if (!HAS_MAP) return;
-        $('formMap').style.display = 'block';
+        if (!HAS_MAP) return; $('formMap').style.display = 'block';
         if (!formMap) { formMap = makeMap('formMap', false); formLayer = L.layerGroup().addTo(formMap); }
-        formMap.invalidateSize();
-        drawRoute(formMap, formLayer, a, b, line);
+        formMap.invalidateSize(); drawRoute(formMap, formLayer, a, b, line);
     }
     function hideFormMap() { $('formMap').style.display = 'none'; }
 
     function renderHint() {
-        const el = $('p3Hint');
-        if (!el) return;
+        const el = $('p3Hint'); if (!el) return;
         if (!current || !current.reliable) { el.innerHTML = ''; el.classList.remove('diff'); return; }
-        const interior = checkedValue('routeType') === 'interior';
-        const band = p3Band(current.km, interior);
-        const chosen = document.querySelector('input[name="p3_score"]:checked');
-        const differs = !!chosen && +chosen.value !== band;
+        const interior = checkedValue('routeType') === 'interior'; const band = p3Band(current.km, interior);
+        const chosen = document.querySelector('input[name="p3_score"]:checked'); const differs = !!chosen && +chosen.value !== band;
         el.classList.toggle('diff', differs);
         el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km, laluan ' +
-            (interior ? 'pedalaman/berbukit' : 'biasa') + '.' +
-            (differs ? ' <strong>Pilihan semasa (' + chosen.value + ') berbeza daripada cadangan sistem.</strong>' : '');
+            (interior ? 'pedalaman/berbukit' : 'biasa') + '.' + (differs ? ' <strong>Pilihan semasa berbeza daripada cadangan.</strong>' : '');
     }
 
     function applyP3() {
         if (!current || !current.reliable) return;
         const band = p3Band(current.km, checkedValue('routeType') === 'interior');
         const radio = document.querySelector('input[name="p3_score"][value="' + band + '"]');
-        if (radio && !radio.checked) {
-            radio.checked = true;
-            radio.dispatchEvent(new Event('change', { bubbles: true }));   // kemas kini penjejak skor
-        }
+        if (radio && !radio.checked) { radio.checked = true; radio.dispatchEvent(new Event('change', { bubbles: true })); }
         renderHint();
     }
 
     async function updateForm() {
-        const token = ++formToken;
-        current = null;
-        if (loadState === 'loading') { setResult('Memuatkan data lokasi fasiliti...'); return renderHint(); }
-        if (loadState === 'error') {
-            setResult('Data lokasi fasiliti tidak dapat dimuatkan. Sila pilih skor P3 secara manual.', true);
-            return renderHint();
-        }
+        const token = ++formToken; current = null;
+        if (loadState === 'loading') { setResult('Memuatkan data...'); return renderHint(); }
+        if (loadState === 'error') { setResult('Data lokasi fasiliti tidak dapat dimuatkan.', true); return renderHint(); }
         const A = resolveForm('Semasa'), B = resolveForm('Diminta');
         if (A.state === 'empty' || B.state === 'empty') { setResult(DEFAULT_MSG); hideFormMap(); return renderHint(); }
         if (A.state === 'nocoord' || B.state === 'nocoord') {
-            const bad = A.state === 'nocoord' ? A : B;
-            setResult('Lokasi &ldquo;' + esc(bad.label) + '&rdquo; tiada dalam pangkalan data fasiliti. Pilih daripada senarai cadangan untuk kiraan automatik, atau pilih skor P3 secara manual.');
-            hideFormMap();
-            return renderHint();
+            const bad = A.state === 'nocoord' ? A : B; setResult('Lokasi &ldquo;' + esc(bad.label) + '&rdquo; tiada dalam pangkalan data. Skor P3 tidak diisi automatik.'); hideFormMap(); return renderHint();
         }
         if (A.f === B.f) {
             current = { km: 0, minutes: 0, source: 'Lokasi sama', reliable: true };
             setResult('<span class="km">0 km</span> &middot; fasiliti semasa dan diminta ialah lokasi yang sama.');
-            showFormMapFor(A.f, B.f, null);
-            return applyP3();
+            showFormMapFor(A.f, B.f, null); return applyP3();
         }
-
-        setResult('Mengira laluan...');
-        showFormMapFor(A.f, B.f, null);
-        let r = null;
-        try { r = await getRoute(A.f, B.f); } catch (e) { console.warn('[Jarak] OSRM gagal:', e); }
-        if (token !== formToken) return;       // pilihan sudah berubah semasa menunggu
+        setResult('Mengira laluan...'); showFormMapFor(A.f, B.f, null); let r = null;
+        try { r = await getRoute(A.f, B.f); } catch (e) {}
+        if (token !== formToken) return;
 
         if (r && r.ok) {
             current = { km: r.km, minutes: r.minutes, source: 'OSRM', reliable: true };
-            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; anggaran ' + fmtMinutes(r.minutes) + ' melalui jalan raya');
-            showFormMapFor(A.f, B.f, r.line);
-            applyP3();
-        } else if (r && r.reason === 'noroute') {
-            setResult('Tiada laluan jalan raya ditemui antara kedua-dua lokasi (cth. fasiliti di pulau). Sila pilih skor P3 secara manual.', true);
+            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; ' + fmtMinutes(r.minutes)); showFormMapFor(A.f, B.f, r.line); applyP3();
         } else {
-            const km = haversineKm(A.f, B.f);
-            current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
-            setResult('Perkhidmatan laluan tidak dapat dihubungi. Jarak garis lurus &asymp; <span class="km">' + km.toFixed(1) +
-                ' km</span> (anggaran kasar, lebih pendek daripada jarak pemanduan sebenar). Skor P3 tidak diisi automatik.', true);
+            const km = haversineKm(A.f, B.f); current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
+            setResult('Jarak garis lurus &asymp; <span class="km">' + km.toFixed(1) + ' km</span>. Skor P3 tidak diisi automatik.', true);
         }
         renderHint();
     }
-    const scheduleUpdate = debounce(() => { updateForm().catch(e => console.error('[Jarak]', e)); }, 250);
-
-    // Pilihan baru: buang keputusan lama serta-merta (jangan biarkan jarak lama dihantar semasa menunggu debounce)
-    function invalidate() {
-        const hadResult = !!current;
-        formToken++; current = null;
-        if (hadResult) setResult('Mengira laluan...');
-        renderHint();
-    }
-
-    // Dipanggil oleh handleFasiliti() selepas dropdown PTj ditukar
+    const scheduleUpdate = debounce(() => { updateForm(); }, 250);
+    function invalidate() { const hadResult = !!current; formToken++; current = null; if (hadResult) setResult('Mengira laluan...'); renderHint(); }
     function enhance(type) {
-        const ptj = $('ptj' + type).value;
-        const box = $('container_fasiliti' + type);
+        const ptj = $('ptj' + type).value; const box = $('container_fasiliti' + type);
         if (ptj.indexOf('PKD') === 0 && loadState === 'ready') {
             const district = ptj.replace(/^PKD\s+/, '');
-            const opts = facilities.filter(f => f.district === district && !f.hub)
-                .map(f => '<option value="' + esc(f.name) + '"></option>').join('');
-            box.innerHTML = '<input type="text" id="val_fasiliti' + type + '" required list="dl_fasiliti' + type +
-                '" autocomplete="off" placeholder="Klinik Kesihatan (Cth: KK Beserah)"><datalist id="dl_fasiliti' + type + '">' + opts + '</datalist>';
+            const opts = facilities.filter(f => f.district === district && !f.hub).map(f => '<option value="' + esc(f.name) + '"></option>').join('');
+            box.innerHTML = '<input type="text" id="val_fasiliti' + type + '" required list="dl_fasiliti' + type + '" autocomplete="off" placeholder="Klinik Kesihatan (Cth: KK Beserah)"><datalist id="dl_fasiliti' + type + '">' + opts + '</datalist>';
         }
-        const el = $('val_fasiliti' + type);
-        if (el && el.type === 'text') el.addEventListener('input', () => { invalidate(); scheduleUpdate(); });
-        invalidate();
-        scheduleUpdate();
+        const el = $('val_fasiliti' + type); if (el && el.type === 'text') el.addEventListener('input', () => { invalidate(); scheduleUpdate(); });
+        invalidate(); scheduleUpdate();
     }
-
     function payloadFields() {
         const interior = checkedValue('routeType') === 'interior';
-        return {
-            jarakKm: current ? Math.round(current.km * 10) / 10 : '',
-            jarakSumber: current ? current.source : '',
-            jenisLaluan: interior ? 'Pedalaman/Berbukit' : 'Biasa',
-            p3Cadangan: current && current.reliable ? p3Band(current.km, interior) : ''
-        };
+        return { jarakKm: current ? Math.round(current.km * 10) / 10 : '', jarakSumber: current ? current.source : '', jenisLaluan: interior ? 'Pedalaman/Berbukit' : 'Biasa', p3Cadangan: current && current.reliable ? p3Band(current.km, interior) : '' };
     }
-
-    function reset() {
-        formToken++; current = null;
-        setResult(DEFAULT_MSG);
-        hideFormMap();
-        if (formLayer) formLayer.clearLayers();
-        renderHint();
-    }
+    function reset() { formToken++; current = null; setResult(DEFAULT_MSG); hideFormMap(); if (formLayer) formLayer.clearLayers(); renderHint(); }
 
     const form = $('operasiForm');
-    if (form) form.addEventListener('change', e => {
-        const n = e.target && e.target.name;
-        if (n === 'routeType') applyP3();
-        else if (n === 'p3_score') renderHint();
-    });
+    if (form) form.addEventListener('change', e => { const n = e.target && e.target.name; if (n === 'routeType') applyP3(); else if (n === 'p3_score') renderHint(); });
 
-    /* ======================= TAB KALKULATOR JARAK ======================= */
-    let toolMap = null, toolRouteLayer = null, toolToken = 0, toolCurrent = null, toolReady = false;
-    const TOOL_DEFAULT = 'Pilih asal dan destinasi, atau klik penanda pada peta.';
-
+    let toolMap = null, toolRouteLayer = null, toolToken = 0, toolCurrent = null, toolReady = false; const TOOL_DEFAULT = 'Pilih asal dan destinasi, atau klik penanda pada peta.';
     function renderToolStats() {
-        const c = toolCurrent;
-        if (!c) { $('toolKm').textContent = '–'; $('toolTime').textContent = '–'; $('toolP3').textContent = '–'; return; }
-        $('toolKm').textContent = (c.reliable ? '' : '≈ ') + c.km.toFixed(1);
-        $('toolTime').textContent = c.minutes == null ? '–' : fmtMinutes(c.minutes);
-        $('toolP3').textContent = c.reliable ? p3Band(c.km, checkedValue('toolRouteType') === 'interior') : '–';
+        const c = toolCurrent; if (!c) { $('toolKm').textContent = '–'; $('toolTime').textContent = '–'; $('toolP3').textContent = '–'; return; }
+        $('toolKm').textContent = (c.reliable ? '' : '≈ ') + c.km.toFixed(1); $('toolTime').textContent = c.minutes == null ? '–' : fmtMinutes(c.minutes); $('toolP3').textContent = c.reliable ? p3Band(c.km, checkedValue('toolRouteType') === 'interior') : '–';
     }
-
     async function updateTool() {
-        const token = ++toolToken;
-        toolCurrent = null; renderToolStats();
-        if (toolRouteLayer) toolRouteLayer.clearLayers();
-        const from = $('toolFrom').value, to = $('toolTo').value;
-        const msg = $('toolMsg');
+        const token = ++toolToken; toolCurrent = null; renderToolStats(); if (toolRouteLayer) toolRouteLayer.clearLayers();
+        const from = $('toolFrom').value, to = $('toolTo').value; const msg = $('toolMsg');
         if (from === '' || to === '') { msg.textContent = TOOL_DEFAULT; return; }
-        const a = facilities[+from], b = facilities[+to];
-        if (a === b) { toolCurrent = { km: 0, minutes: 0, reliable: true }; renderToolStats(); msg.textContent = 'Asal dan destinasi ialah fasiliti yang sama.'; return; }
-        msg.textContent = 'Mengira laluan...';
-        if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, null);
-        let r = null;
-        try { r = await getRoute(a, b); } catch (e) { console.warn('[Jarak] OSRM gagal:', e); }
-        if (token !== toolToken) return;
-        if (r && r.ok) {
-            toolCurrent = { km: r.km, minutes: r.minutes, reliable: true };
-            msg.textContent = a.name + ' → ' + b.name;
-            if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, r.line);
-        } else if (r && r.reason === 'noroute') {
-            msg.textContent = 'Tiada laluan jalan raya ditemui antara kedua-dua lokasi (cth. fasiliti di pulau).';
-        } else {
-            toolCurrent = { km: haversineKm(a, b), minutes: null, reliable: false };
-            msg.textContent = 'Perkhidmatan laluan tidak dapat dihubungi. Dipaparkan jarak garis lurus (anggaran kasar).';
-        }
+        const a = facilities[+from], b = facilities[+to]; if (a === b) { toolCurrent = { km: 0, minutes: 0, reliable: true }; renderToolStats(); msg.textContent = 'Fasiliti sama.'; return; }
+        msg.textContent = 'Mengira laluan...'; if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, null); let r = null;
+        try { r = await getRoute(a, b); } catch (e) {} if (token !== toolToken) return;
+        if (r && r.ok) { toolCurrent = { km: r.km, minutes: r.minutes, reliable: true }; msg.textContent = a.name + ' → ' + b.name; if (toolMap) drawRoute(toolMap, toolRouteLayer, a, b, r.line); } 
+        else { toolCurrent = { km: haversineKm(a, b), minutes: null, reliable: false }; msg.textContent = 'Jarak garis lurus (anggaran kasar).'; }
         renderToolStats();
     }
-
     function initTool() {
-        if (toolReady || loadState !== 'ready') return;
-        toolReady = true;
+        if (toolReady || loadState !== 'ready') return; toolReady = true;
         const districts = Array.from(new Set(facilities.map(f => f.district))).sort();
-        const opts = '<option value="">-- Pilih fasiliti --</option>' + districts.map(d =>
-            '<optgroup label="' + esc(d) + '">' +
-            facilities.map((f, i) => f.district === d ? '<option value="' + i + '">' + esc(f.name) + '</option>' : '').join('') +
-            '</optgroup>').join('');
-        $('toolFrom').innerHTML = opts;
-        $('toolTo').innerHTML = opts;
-        $('toolFrom').addEventListener('change', updateTool);
-        $('toolTo').addEventListener('change', updateTool);
+        const opts = '<option value="">-- Pilih fasiliti --</option>' + districts.map(d => '<optgroup label="' + esc(d) + '">' + facilities.map((f, i) => f.district === d ? '<option value="' + i + '">' + esc(f.name) + '</option>' : '').join('') + '</optgroup>').join('');
+        $('toolFrom').innerHTML = opts; $('toolTo').innerHTML = opts; $('toolFrom').addEventListener('change', updateTool); $('toolTo').addEventListener('change', updateTool);
         document.querySelectorAll('input[name="toolRouteType"]').forEach(r => r.addEventListener('change', renderToolStats));
-
         if (HAS_MAP) {
-            toolMap = makeMap('toolMap', true);
-            toolRouteLayer = L.layerGroup().addTo(toolMap);
-            const pts = [];
+            toolMap = makeMap('toolMap', true); toolRouteLayer = L.layerGroup().addTo(toolMap); const pts = [];
             facilities.forEach((f, i) => {
-                const m = L.circleMarker([f.lat, f.lng], f.hub
-                    ? { radius: 8, color: '#0B2447', weight: 2, fillColor: '#C5A059', fillOpacity: 1 }
-                    : { radius: 5, color: '#19376D', weight: 1, fillColor: '#19376D', fillOpacity: 0.7 });
-                m.bindTooltip(esc(f.name));
-                m.bindPopup('<strong>' + esc(f.name) + '</strong><br><span style="color:#64748B">' + esc(f.district) + '</span>' +
-                    '<div class="pop-actions"><button type="button" onclick="Jarak.pick(' + i + ',\'from\')">Jadikan Asal</button>' +
-                    '<button type="button" onclick="Jarak.pick(' + i + ',\'to\')">Jadikan Destinasi</button></div>');
-                m.addTo(toolMap);
-                pts.push([f.lat, f.lng]);
+                const m = L.circleMarker([f.lat, f.lng], f.hub ? { radius: 8, color: '#0B2447', weight: 2, fillColor: '#C5A059', fillOpacity: 1 } : { radius: 5, color: '#19376D', weight: 1, fillColor: '#19376D', fillOpacity: 0.7 });
+                m.bindTooltip(esc(f.name)); m.bindPopup('<strong>' + esc(f.name) + '</strong><br><span style="color:#64748B">' + esc(f.district) + '</span><div class="pop-actions"><button type="button" onclick="Jarak.pick(' + i + ',\'from\')">Jadikan Asal</button><button type="button" onclick="Jarak.pick(' + i + ',\'to\')">Jadikan Destinasi</button></div>'); m.addTo(toolMap); pts.push([f.lat, f.lng]);
             });
             if (pts.length) toolMap.fitBounds(pts, { padding: [20, 20] });
-        } else {
-            $('toolMap').style.display = 'none';
-            $('toolMsg').textContent = 'Peta tidak dapat dimuatkan, tetapi kiraan jarak masih boleh digunakan.';
         }
     }
-
-    function pick(i, which) {
-        if (!toolReady) return;
-        $(which === 'from' ? 'toolFrom' : 'toolTo').value = String(i);
-        if (toolMap) toolMap.closePopup();
-        updateTool();
-    }
-
-    function onRoute(hash) {
-        if (hash === '#jarak') {
-            if (loadState === 'ready') initTool();
-            else if (loadState === 'error') $('toolMsg').textContent = 'Data lokasi fasiliti tidak dapat dimuatkan. Pastikan fail CSV berada dalam folder yang sama dengan laman ini.';
-            setTimeout(() => { if (toolMap) toolMap.invalidateSize(); }, 80);
-        } else if (hash === '#borang' || hash === '') {
-            setTimeout(() => { if (formMap) formMap.invalidateSize(); }, 80);
-        }
-    }
-
-    window.Jarak = { enhance, reset, payloadFields, onRoute, pick, _test: { parseCSV, p3Band, haversineKm } };
-
-    /* ---------- muat data ---------- */
+    function pick(i, which) { if (!toolReady) return; $(which === 'from' ? 'toolFrom' : 'toolTo').value = String(i); if (toolMap) toolMap.closePopup(); updateTool(); }
+    function onRoute(hash) { if (hash === '#jarak') { if (loadState === 'ready') initTool(); setTimeout(() => { if (toolMap) toolMap.invalidateSize(); }, 80); } else if (hash === '#borang' || hash === '') { setTimeout(() => { if (formMap) formMap.invalidateSize(); }, 80); } }
+    window.Jarak = { enhance, reset, payloadFields, onRoute, pick };
     (async function load() {
-        try {
-            const res = await fetch(DATA_URL, { cache: 'no-cache' });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            facilities = parseFacilities(await res.text());
-            if (!facilities.length) throw new Error('Tiada fasiliti sah dalam CSV');
-            facilities.forEach(f => {
-                if (byKey[norm(f.name)]) console.warn('[Jarak] Nama fasiliti berganda dalam CSV: ' + f.name);
-                byKey[norm(f.name)] = f;
-            });
-            loadState = 'ready';
-        } catch (e) {
-            console.error('[Jarak] Gagal memuatkan data fasiliti:', e);
-            loadState = 'error';
-        }
-        scheduleUpdate();
-        if (location.hash === '#jarak') onRoute('#jarak');
+        try { const res = await fetch(DATA_URL, { cache: 'no-cache' }); if (!res.ok) throw new Error('HTTP'); facilities = parseFacilities(await res.text()); facilities.forEach(f => { byKey[norm(f.name)] = f; }); loadState = 'ready'; } 
+        catch (e) { loadState = 'error'; } scheduleUpdate(); if (location.hash === '#jarak') onRoute('#jarak');
     })();
 })();
 </script>
