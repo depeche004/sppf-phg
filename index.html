@@ -135,7 +135,7 @@
         .jarak-box { margin-top: 20px; background: rgba(248, 250, 252, 0.8); border: 1px solid var(--border); border-left: 4px solid var(--brand-gold); border-radius: 6px; padding: 18px; }
         .jarak-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .jarak-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-        .jarak-result { font-size: 0.95rem; font-weight: 600; color: var(--brand-navy); max-width: 520px; }
+        .jarak-result { font-size: 0.95rem; font-weight: 600; color: var(--brand-navy); max-width: 550px; }
         .jarak-result .km { font-size: 1.6rem; font-weight: 800; }
         .jarak-result.is-error { color: var(--error-red); }
         .jarak-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; }
@@ -223,21 +223,22 @@
             <!-- 2. Maklumat Penempatan & Alamat Kediaman -->
             <div class="card">
                 <div class="card-title">2. Maklumat Penempatan & Logistik Kediaman</div>
-                <div class="card-desc">Jarak logistik P3 diukur terus dari kediaman pegawai / kediaman pasangan (PJJ) ke fasiliti bertugas yang diminta.</div>
+                <div class="card-desc">Beban logistik P3 diukur berdasarkan jarak pemanduan harian (ulang-alik pergi & balik) dari kediaman pegawai ke fasiliti bertugas semasa.</div>
 
-                <!-- Input Carian Lokasi Kediaman -->
+                <!-- Input Carian Lokasi Kediaman & Butang GPS -->
                 <div style="background: rgba(248, 250, 252, 0.9); padding: 18px; border: 1px solid var(--border); border-left: 4px solid var(--brand-navy); border-radius: 6px; margin-bottom: 20px;">
                     <label style="color: var(--brand-navy); margin-bottom: 8px;">Lokasi Kediaman Pemohon (Rumah Semasa / Rumah Pasangan PJJ)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="alamatKediaman" placeholder="Taip nama taman, jalan atau bandar (Cth: Taman Tas, Kuantan / Bandar Pusat Jengka)" style="flex: 1;">
-                        <button type="button" id="btnCariRumah" onclick="Jarak.searchHome()" style="background: var(--brand-navy); color: #fff; border: 0; padding: 0 20px; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap;">Cari Lokasi</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="alamatKediaman" placeholder="Taip nama taman, jalan atau bandar (Cth: Taman Alam Perdana Kuantan)" style="flex: 1; min-width: 220px;">
+                        <button type="button" id="btnCariRumah" onclick="Jarak.searchHome()" style="background: var(--brand-navy); color: #fff; border: 0; padding: 0 16px; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap;">Cari Lokasi</button>
+                        <button type="button" onclick="Jarak.useCurrentGPS()" style="background: var(--brand-gold); color: #fff; border: 0; padding: 0 14px; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap;" title="Gunakan koordinat peranti">📍 Lokasi Semasa</button>
                     </div>
-                    <small style="color: var(--text-muted); display: block; margin-top: 6px;">Tip: Selepas lokasi dicari, anda juga boleh klik atau seret penanda kediaman berwarna oren di atas peta untuk melaraskan kedudukan rumah dengan lebih tepat.</small>
+                    <small style="color: var(--text-muted); display: block; margin-top: 6px;">Tip: Anda juga boleh klik atau seret penanda kediaman berwarna oren di atas peta untuk melaraskan koordinat kediaman secara manual.</small>
                 </div>
 
                 <div class="form-grid">
                     <div style="background: rgba(248, 250, 252, 0.8); padding: 15px; border: 1px solid var(--border); border-radius: 6px;">
-                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI SEMASA</label>
+                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI SEMASA (TITIK UKURAN P3)</label>
                         <div class="form-group">
                             <select id="ptjSemasa" required onchange="handleFasiliti('Semasa')">
                                 <option value="">-- Kategori PTj --</option>
@@ -278,7 +279,7 @@
                     </div>
 
                     <div style="background: rgba(248, 250, 252, 0.8); padding: 15px; border: 1px solid var(--border); border-radius: 6px;">
-                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI DIMINTA (DESTINASI UKURAN P3)</label>
+                        <label style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px;">FASILITI DIMINTA</label>
                         <div class="form-group">
                             <select id="ptjDiminta" required onchange="handleFasiliti('Diminta')">
                                 <option value="">-- Kategori PTj --</option>
@@ -322,8 +323,8 @@
                 <div class="jarak-box" id="jarakBox">
                     <div class="jarak-head">
                         <div>
-                            <div class="jarak-label">Jarak Pemanduan Kediaman &rarr; Fasiliti Diminta</div>
-                            <div class="jarak-result" id="jarakResult">Cari lokasi kediaman dan pilih fasiliti diminta untuk mengira jarak secara automatik.</div>
+                            <div class="jarak-label">Beban Jarak Pemanduan Harian (Ulang-Alik Pergi & Balik)</div>
+                            <div class="jarak-result" id="jarakResult">Cari lokasi kediaman dan pilih Fasiliti Semasa untuk mengira jarak harian.</div>
                         </div>
                         <div>
                             <div class="jarak-label">Jenis Laluan</div>
@@ -334,7 +335,7 @@
                         </div>
                     </div>
                     <div class="map-box" id="formMap" style="display:none;"></div>
-                    <div class="jarak-note">Skor P3 dicadangkan secara automatik berdasarkan jarak jalan raya (OSRM) dari kediaman ke fasiliti diminta. Penilai tetap mempunyai budi bicara untuk mengubah skor sekiranya perlu.</div>
+                    <div class="jarak-note">Skor P3 dicadangkan secara automatik berdasarkan jarak jalan raya ulang-alik sehari (OSRM) dari kediaman ke fasiliti semasa. Penilai berhak mengubah skor mengikut pertimbangan perkhidmatan.</div>
                 </div>
             </div>
 
@@ -732,8 +733,8 @@
         },
         { 
             id: 'p3', 
-            title: 'P3: Beban Logistik & Jarak (Kediaman ke Fasiliti Diminta)', 
-            desc: 'Jarak pemanduan sehala antara alamat kediaman pegawai / kediaman pasangan PJJ ke fasiliti bertugas yang diminta. Kategori laluan pedalaman/berbukit menerima pertimbangan skor tambahan.',
+            title: 'P3: Beban Logistik & Jarak Harian (Kediaman ke Fasiliti Semasa)', 
+            desc: 'Jarak pemanduan ulang-alik harian (pergi & balik) antara alamat kediaman pegawai ke fasiliti semasa. Kategori laluan pedalaman/berbukit menerima pertimbangan skor tambahan.',
             scale: [1, 2, 3, 4, 5], 
             ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Pedalaman/Berbukit</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>>300km / Antara negeri</td><td>151km - 300km</td></tr>` 
         },
@@ -1041,7 +1042,7 @@
     const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
     const BPF_NAME = 'Bahagian Perkhidmatan Farmasi';
     const HAS_MAP = typeof L !== 'undefined';
-    const DEFAULT_MSG = 'Cari lokasi kediaman dan pilih fasiliti diminta untuk mengira jarak secara automatik.';
+    const DEFAULT_MSG = 'Cari lokasi kediaman dan pilih Fasiliti Semasa untuk mengira jarak harian.';
 
     const HOSPITAL_MAP = {
         'HTAA Kuantan': 'Hospital Tengku Ampuan Afzan (HTAA)', 'HOSHAS Temerloh': 'Hospital Sultan Haji Ahmad Shah',
@@ -1052,7 +1053,7 @@
     };
 
     let facilities = []; let byKey = {}; let loadState = 'loading'; const routeCache = new Map();
-    let homeLoc = null; // Menyimpan koordinat kediaman pemohon
+    let homeLoc = null;
     let formMap = null, formLayer = null, homeMarker = null, formToken = 0, current = null;
 
     const $ = id => document.getElementById(id);
@@ -1127,7 +1128,7 @@
     }
 
     function makeMap(id, wheelZoom) {
-        const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.8168, 103.3317], 8);
+        const m = L.map(id, { scrollWheelZoom: wheelZoom }).setView([3.8168, 103.3317], 9);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(m); 
         return m;
     }
@@ -1154,7 +1155,7 @@
         const interior = checkedValue('routeType') === 'interior'; const band = p3Band(current.km, interior);
         const chosen = document.querySelector('input[name="p3_score"]:checked'); const differs = !!chosen && +chosen.value !== band;
         el.classList.toggle('diff', differs);
-        el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km dari kediaman, laluan ' +
+        el.innerHTML = 'Cadangan sistem: <strong>Skor ' + band + '</strong> &mdash; ' + current.km.toFixed(1) + ' km/hari (ulang-alik), laluan ' +
             (interior ? 'pedalaman/berbukit' : 'biasa') + '.' + (differs ? ' <strong>Pilihan semasa berbeza daripada cadangan.</strong>' : '');
     }
 
@@ -1166,7 +1167,7 @@
         renderHint();
     }
 
-    // Melukis laluan Kediaman -> Fasiliti Diminta di atas peta
+    // Melukis laluan Kediaman -> Fasiliti Semasa di atas peta
     function drawHomeToFacility(home, dest, line) {
         if (!HAS_MAP) return;
         $('formMap').style.display = 'block';
@@ -1174,9 +1175,10 @@
             formMap = makeMap('formMap', false);
             formLayer = L.layerGroup().addTo(formMap);
             
-            // Klik pada peta untuk ubah lokasi kediaman
+            // Klik pada peta untuk memilih lokasi kediaman secara langsung
             formMap.on('click', function(e) {
                 homeLoc = { lat: e.latlng.lat, lng: e.latlng.lng, name: 'Lokasi Pilihan di Peta' };
+                $('alamatKediaman').value = 'Pin Peta (' + e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4) + ')';
                 updateForm();
             });
         }
@@ -1188,11 +1190,11 @@
             radius: 10, color: '#0B2447', weight: 3, fillColor: '#F59E0B', fillOpacity: 1 
         }).bindTooltip('Kediaman: ' + esc(home.name || 'Lokasi Dipilih')).addTo(formLayer);
 
-        // Marker Fasiliti Diminta (Merah)
+        // Marker Fasiliti Semasa (Biru/Emas)
         if (dest) {
             L.circleMarker([dest.lat, dest.lng], { 
-                radius: 10, color: '#0B2447', weight: 3, fillColor: '#DC2626', fillOpacity: 1 
-            }).bindTooltip('Fasiliti Diminta: ' + esc(dest.name)).addTo(formLayer);
+                radius: 10, color: '#0B2447', weight: 3, fillColor: dest.hub ? '#C5A059' : '#19376D', fillOpacity: 1 
+            }).bindTooltip('Fasiliti Semasa: ' + esc(dest.name)).addTo(formLayer);
         }
 
         if (line && line.length) {
@@ -1201,7 +1203,7 @@
         } else if (dest) {
             formMap.fitBounds(L.latLngBounds([[home.lat, home.lng], [dest.lat, dest.lng]]), { padding: [40, 40], maxZoom: 13 });
         } else {
-            formMap.setView([home.lat, home.lng], 12);
+            formMap.setView([home.lat, home.lng], 13);
         }
     }
 
@@ -1210,56 +1212,73 @@
         if (loadState === 'loading') { setResult('Memuatkan data...'); return renderHint(); }
         if (loadState === 'error') { setResult('Pangkalan data fasiliti gagal dimuatkan.', true); return renderHint(); }
         
-        const B = resolveForm('Diminta');
+        // Ukuran beban logistik P3 adalah berasaskan Fasiliti SEMASA
+        const A = resolveForm('Semasa');
         
-        if (!homeLoc && B.state === 'empty') {
+        if (!homeLoc && A.state === 'empty') {
             setResult(DEFAULT_MSG);
             $('formMap').style.display = 'none';
             return renderHint();
         }
 
         if (!homeLoc) {
-            setResult('Sila masukkan alamat kediaman pegawai di bahagian atas untuk memulakan kiraan jarak.');
+            setResult('Sila masukkan lokasi kediaman pegawai di bahagian atas.');
             return renderHint();
         }
 
-        if (B.state === 'empty') {
-            setResult('Kediaman ditetapkan: <strong>' + esc(homeLoc.name) + '</strong>. Sila pilih fasiliti diminta.');
+        if (A.state === 'empty') {
+            setResult('Kediaman ditetapkan: <strong>' + esc(homeLoc.name) + '</strong>. Sila pilih Fasiliti Semasa.');
             drawHomeToFacility(homeLoc, null, null);
             return renderHint();
         }
 
-        if (B.state === 'nocoord') {
-            setResult('Lokasi fasiliti &ldquo;' + esc(B.label) + '&rdquo; tiada dalam rekod peta. Skor P3 tidak dapat diisi automatik.', true);
+        if (A.state === 'nocoord') {
+            setResult('Lokasi fasiliti semasa &ldquo;' + esc(A.label) + '&rdquo; tiada dalam rekod peta. Skor P3 tidak diisi automatik.', true);
             return renderHint();
         }
 
-        setResult('Mengira laluan pemanduan jalan raya...');
-        drawHomeToFacility(homeLoc, B.f, null);
+        setResult('Mengira laluan pemanduan harian...');
+        drawHomeToFacility(homeLoc, A.f, null);
         
         let r = null;
-        try { r = await getRoute(homeLoc, B.f); } catch (e) {}
+        try { r = await getRoute(homeLoc, A.f); } catch (e) {}
         if (token !== formToken) return;
 
         if (r && r.ok) {
-            current = { km: r.km, minutes: r.minutes, source: 'OSRM', reliable: true };
-            setResult('<span class="km">' + r.km.toFixed(1) + ' km</span> &middot; ' + fmtMinutes(r.minutes) + ' (Dari: ' + esc(homeLoc.name) + ')');
-            drawHomeToFacility(homeLoc, B.f, r.line);
+            const sehalaKm = r.km;
+            const pergiBalikKm = sehalaKm * 2; // Jarak Ulang-Alik Sehari
+            const masaSehala = r.minutes;
+            
+            current = { 
+                km: pergiBalikKm, 
+                sehalaKm: sehalaKm,
+                minutes: masaSehala * 2, 
+                source: 'OSRM (Pergi-Balik)', 
+                reliable: true 
+            };
+            
+            setResult(
+                '<span class="km">' + pergiBalikKm.toFixed(1) + ' km/hari</span> &middot; ' + 
+                '(Sehala: ' + sehalaKm.toFixed(1) + ' km &middot; ' + fmtMinutes(masaSehala) + ')' +
+                '<br><small style="color:var(--text-muted)">Ulang-alik dari: ' + esc(homeLoc.name) + ' &harr; ' + esc(A.f.name) + '</small>'
+            );
+            drawHomeToFacility(homeLoc, A.f, r.line);
             applyP3();
         } else {
-            const km = haversineKm(homeLoc, B.f);
-            current = { km: km, minutes: null, source: 'garis lurus', reliable: false };
-            setResult('Jarak garis lurus &asymp; <span class="km">' + km.toFixed(1) + ' km</span>. Skor P3 tidak diisi automatik.', true);
+            const kmSehala = haversineKm(homeLoc, A.f);
+            const kmPergiBalik = kmSehala * 2;
+            current = { km: kmPergiBalik, sehalaKm: kmSehala, minutes: null, source: 'garis lurus (Pergi-Balik)', reliable: false };
+            setResult('Jarak garis lurus pergi-balik &asymp; <span class="km">' + kmPergiBalik.toFixed(1) + ' km/hari</span>.', true);
         }
         renderHint();
     }
 
     const scheduleUpdate = debounce(() => { updateForm(); }, 250);
 
-    // Carian Geocoding Alamat Kediaman (Nominatim)
+    // Carian Geocoding Alamat Fleksibel (Nominatim)
     async function searchHome() {
-        const query = $('alamatKediaman').value.trim();
-        if (!query) {
+        const rawQuery = $('alamatKediaman').value.trim();
+        if (!rawQuery) {
             showToast('Sila masukkan nama taman, jalan atau bandar.', 'error');
             return;
         }
@@ -1268,29 +1287,75 @@
         btn.innerText = 'Mencari...';
         btn.disabled = true;
 
-        try {
-            const url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=my&q=' + encodeURIComponent(query + ', Pahang');
-            const res = await fetch(url, { headers: { 'Accept-Language': 'ms,en' } });
-            const list = await res.json();
-            
-            if (list && list.length > 0) {
-                const item = list[0];
-                homeLoc = {
-                    lat: parseFloat(item.lat),
-                    lng: parseFloat(item.lon),
-                    name: query
-                };
-                showToast('Lokasi kediaman ditemui: ' + item.display_name.split(',')[0], 'success');
-                updateForm();
-            } else {
-                showToast('Alamat tidak ditemui. Sila cuba kata kunci nama jalan / taman / bandar yang lain.', 'error');
+        const cleanQuery = rawQuery.replace(/,/g, ' ');
+        const queries = [
+            rawQuery,
+            cleanQuery,
+            rawQuery.split(',')[0].trim() + ' Pahang'
+        ];
+
+        let found = null;
+
+        for (let q of queries) {
+            try {
+                const url = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=my&limit=1&q=' + encodeURIComponent(q);
+                const res = await fetch(url, { headers: { 'Accept-Language': 'ms,en' } });
+                const list = await res.json();
+                if (list && list.length > 0) {
+                    found = list[0];
+                    break;
+                }
+            } catch (err) {
+                console.warn('Percubaan carian gagal:', q);
             }
-        } catch (e) {
-            showToast('Ralat rangkaian carian lokasi kediaman.', 'error');
-        } finally {
-            btn.innerText = 'Cari Lokasi';
-            btn.disabled = false;
         }
+
+        btn.innerText = 'Cari Lokasi';
+        btn.disabled = false;
+
+        if (found) {
+            homeLoc = {
+                lat: parseFloat(found.lat),
+                lng: parseFloat(found.lon),
+                name: rawQuery
+            };
+            showToast('Lokasi ditemui: ' + found.display_name.split(',')[0], 'success');
+            updateForm();
+        } else {
+            showToast('Nama taman belum ada dalam pangkalan data peta. Sila klik terus lokasi rumah anda di atas peta.', 'error');
+            $('formMap').style.display = 'block';
+            if (!formMap) {
+                formMap = makeMap('formMap', false);
+                formLayer = L.layerGroup().addTo(formMap);
+                formMap.on('click', function(e) {
+                    homeLoc = { lat: e.latlng.lat, lng: e.latlng.lng, name: 'Lokasi Pin di Peta' };
+                    $('alamatKediaman').value = 'Pin Peta (' + e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4) + ')';
+                    updateForm();
+                });
+            }
+            formMap.invalidateSize();
+        }
+    }
+
+    // Fungsi Mengesan Koordinat GPS Peranti
+    function useCurrentGPS() {
+        if (!navigator.geolocation) {
+            showToast('Peranti anda tidak menyokong fungsi GPS.', 'error');
+            return;
+        }
+        showToast('Mengesan koordinat GPS peranti...', 'info');
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            homeLoc = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+                name: 'Lokasi GPS Semasa'
+            };
+            $('alamatKediaman').value = 'Lokasi GPS (' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4) + ')';
+            showToast('Koordinat GPS berjaya dikesan.', 'success');
+            updateForm();
+        }, function(err) {
+            showToast('Gagal mengesan GPS: ' + err.message, 'error');
+        }, { timeout: 10000 });
     }
 
     function enhance(type) {
@@ -1329,7 +1394,7 @@
         else if (n === 'p3_score') renderHint(); 
     });
 
-    // Kalkulator Jarak Papan Tab #jarak
+    // Kalkulator Jarak Tab #jarak
     let toolMap = null, toolRouteLayer = null, toolToken = 0, toolCurrent = null, toolReady = false; const TOOL_DEFAULT = 'Pilih asal dan destinasi, atau klik penanda pada peta.';
     function renderToolStats() {
         const c = toolCurrent; if (!c) { $('toolKm').textContent = '–'; $('toolTime').textContent = '–'; $('toolP3').textContent = '–'; return; }
@@ -1386,7 +1451,7 @@
         } 
     }
 
-    window.Jarak = { enhance, reset, payloadFields, onRoute, pick, searchHome };
+    window.Jarak = { enhance, reset, payloadFields, onRoute, pick, searchHome, useCurrentGPS };
     
     (async function load() {
         try { 
