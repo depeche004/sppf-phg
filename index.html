@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOVE-Rx PHG | Sistem Operasi Pertukaran</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <!-- Google Identity Services SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root { 
             --brand-navy: #0B2447; --brand-blue: #19376D; --brand-gold: #C5A059; 
@@ -55,6 +57,7 @@
         
         /* Forms */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 16px; }
         label { font-weight: 600; display: block; margin-bottom: 6px; color: var(--brand-navy); font-size: 0.9rem; }
         input[type="text"], input[type="email"], input[type="number"], select, textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.3s; background: rgba(248, 250, 252, 0.8); }
@@ -73,12 +76,12 @@
         .ref-table td:first-child { font-weight: 700; text-align: center; width: 45px; background: #F8FAFC; color: var(--brand-blue);}
 
         /* Likert */
-        .likert-wrapper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .likert-wrapper { display: grid; gap: 10px; margin-top: 15px; }
         .likert-option { position: relative; cursor: pointer; }
         .likert-option input[type="radio"] { position: absolute; opacity: 0; }
         .likert-tile { background: var(--surface); border: 2px solid var(--border); border-radius: 8px; padding: 15px 0; text-align: center; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-weight: 700; font-size: 1.2rem; color: var(--text-muted); }
-        .likert-tile:hover { border-color: var(--brand-gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(197, 160, 89, 0.15); }
-        .likert-option input[type="radio"]:checked + .likert-tile { background: linear-gradient(135deg, var(--brand-navy), var(--brand-blue)); border-color: var(--brand-gold); color: var(--surface); transform: scale(1.05); box-shadow: 0 4px 15px rgba(11, 36, 71, 0.2); }
+        .likert-option:hover .likert-tile { border-color: var(--brand-gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(197, 160, 89, 0.15); }
+        .likert-option input[type="radio"]:checked + .likert-tile { background: linear-gradient(135deg, var(--brand-navy), var(--brand-blue)); border-color: var(--brand-gold); color: var(--surface); transform: scale(1.03); box-shadow: 0 4px 15px rgba(11, 36, 71, 0.2); }
 
         /* Realtime Score Tracker */
         .score-tracker { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 15px 25px; border-radius: 8px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 70px; z-index: 90; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: 0.3s; border-left: 4px solid var(--brand-gold);}
@@ -105,7 +108,7 @@
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Clean Toasts */
+        /* Toasts */
         .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 16px 20px; border-radius: 6px; color: white; font-weight: 500; font-size: 0.9rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; min-width: 250px; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -126,7 +129,7 @@
         .close { color: var(--text-muted); position: absolute; right: 25px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .close:hover { color: var(--error-red); }
 
-        /* Distance tool (Leaflet + OSRM) */
+        /* Distance tool */
         .jarak-box { margin-top: 20px; background: rgba(248, 250, 252, 0.8); border: 1px solid var(--border); border-left: 4px solid var(--brand-gold); border-radius: 6px; padding: 18px; }
         .jarak-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .jarak-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
@@ -150,7 +153,13 @@
         .p3-hint:empty { display: none; }
         .pop-actions { display: flex; gap: 6px; margin-top: 8px; }
         .pop-actions button { flex: 1; background: var(--brand-navy); color: #fff; border: none; border-radius: 4px; padding: 6px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
-        @media (max-width: 768px) { .jarak-grid, .jarak-stats { grid-template-columns: 1fr; } .map-box { height: 280px; } .tools-map { height: 400px; } .nav-btn { padding: 14px 10px; font-size: 0.82rem; } }
+        
+        @media (max-width: 768px) { 
+            .jarak-grid, .jarak-stats, .form-grid, .form-grid-3 { grid-template-columns: 1fr; } 
+            .map-box { height: 280px; } 
+            .tools-map { height: 400px; } 
+            .nav-btn { padding: 14px 10px; font-size: 0.82rem; } 
+        }
     </style>
 </head>
 <body>
@@ -314,6 +323,7 @@
                 </div>
             </div>
 
+            <!-- Parameter P1 - P9 -->
             <div id="scoringContainer"></div>
 
             <!-- 3. Maklumat Tambahan -->
@@ -353,17 +363,105 @@
                 </div>
             </div>
 
-            <!-- 4. Ulasan KJF -->
+            <!-- 4. Ulasan & Maklumat Penilai (KJF / PFK / KC) -->
             <div class="card">
-                <div class="card-title">4. Ulasan Ketua Jabatan</div>
+                <div class="card-title">4. Maklumat & Ulasan Penilai</div>
+
+                <!-- Dropdown Maklumat Penilai -->
+                <div class="form-grid-3">
+                    <div class="form-group">
+                        <label>Nama Penilai</label>
+                        <input type="text" id="nama_penilai" required placeholder="Nama penuh penilai">
+                    </div>
+                    <div class="form-group">
+                        <label>Jawatan Penilai</label>
+                        <select id="jawatan_penilai" required>
+                            <option value="">-- Sila Pilih Jawatan --</option>
+                            <option value="Ketua Jabatan Farmasi">Ketua Jabatan Farmasi</option>
+                            <option value="Pegawai Farmasi Kesihatan">Pegawai Farmasi Kesihatan</option>
+                            <optgroup label="Ketua Cawangan (BPF JKNP)">
+                                <option value="Ketua Cawangan Pengurusan Farmasi">Ketua Cawangan Pengurusan Farmasi</option>
+                                <option value="Ketua Cawangan Amalan & Perkembangan Farmasi">Ketua Cawangan Amalan & Perkembangan Farmasi</option>
+                                <option value="Ketua Cawangan Penguatkuasaan Farmasi">Ketua Cawangan Penguatkuasaan Farmasi</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PTj Penilai</label>
+                        <select id="ptj_penilai" required>
+                            <option value="">-- Sila Pilih PTj --</option>
+                            <option value="Bahagian Perkhidmatan Farmasi, JKNP">Bahagian Perkhidmatan Farmasi, JKNP</option>
+                            <optgroup label="Hospital">
+                                <option value="HTAA Kuantan">HTAA Kuantan</option>
+                                <option value="HOSHAS Temerloh">HOSHAS Temerloh</option>
+                                <option value="H. Kuala Lipis">H. Kuala Lipis</option>
+                                <option value="H. Bentong">H. Bentong</option>
+                                <option value="H. Raub">H. Raub</option>
+                                <option value="H. Jerantut">H. Jerantut</option>
+                                <option value="H. Jengka">H. Jengka</option>
+                                <option value="H. Pekan">H. Pekan</option>
+                                <option value="H. Muadzam Shah">H. Muadzam Shah</option>
+                                <option value="H. Sultanah Hajjah Kalsom">H. Sultanah Hajjah Kalsom</option>
+                                <option value="H. Rompin">H. Rompin</option>
+                                <option value="H. Bera">H. Bera</option>
+                            </optgroup>
+                            <optgroup label="Pejabat Kesihatan Daerah (PKD)">
+                                <option value="PKD Kuantan">PKD Kuantan</option>
+                                <option value="PKD Temerloh">PKD Temerloh</option>
+                                <option value="PKD Bentong">PKD Bentong</option>
+                                <option value="PKD Bera">PKD Bera</option>
+                                <option value="PKD Jerantut">PKD Jerantut</option>
+                                <option value="PKD Lipis">PKD Lipis</option>
+                                <option value="PKD Maran">PKD Maran</option>
+                                <option value="PKD Pekan">PKD Pekan</option>
+                                <option value="PKD Raub">PKD Raub</option>
+                                <option value="PKD Rompin">PKD Rompin</option>
+                                <option value="PKD Cameron Highlands">PKD Cameron</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
                 
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label>E-mel Salinan Penilai (Untuk resit PDF)</label>
-                    <input type="email" id="email_penilai" required placeholder="Cth: nama@moh.gov.my">
+                <!-- SSO Google KKM -->
+                <div class="form-group" style="margin-bottom: 24px; background: rgba(248, 250, 252, 0.9); padding: 18px; border: 1px solid var(--border); border-radius: 8px;">
+                    <label style="color: var(--brand-navy); margin-bottom: 8px;">Pengesahan E-mel Rasmi Penilai (SSO KKM)</label>
+                    
+                    <div id="g_id_signin_container">
+                        <div id="g_id_onload"
+                             data-client_id="954439864745-hkk44dtk1gn7s8c8r1bjiugbkv6aic5c.apps.googleusercontent.com"
+                             data-callback="handleCredentialResponse"
+                             data-auto_prompt="false">
+                        </div>
+                        <div class="g_id_signin" 
+                             data-type="standard" 
+                             data-size="large" 
+                             data-theme="outline" 
+                             data-text="sign_in_with" 
+                             data-shape="rectangular" 
+                             data-logo_alignment="left">
+                        </div>
+                        <small style="color: var(--text-muted); display: block; margin-top: 8px;">Sila log masuk menggunakan e-mel rasmi <strong>@moh.gov.my</strong> untuk mengesahkan identiti dan menerima salinan PDF borang pertukaran.</small>
+                    </div>
+
+                    <div id="user_profile_box" style="display: none; align-items: center; justify-content: space-between; background: #E8F7EF; border: 1px solid #0F766E; padding: 12px 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="background: #0F766E; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">✓</span>
+                            <div>
+                                <div id="user_display_name" style="font-weight: 700; color: var(--brand-navy); font-size: 0.95rem;"></div>
+                                <div id="user_display_email" style="color: #0F766E; font-size: 0.85rem; font-weight: 600;"></div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="logoutGoogle()" style="background: transparent; border: 0; color: var(--error-red); font-size: 0.8rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Tukar Akaun</button>
+                    </div>
+
+                    <input type="hidden" id="email_penilai" required>
                 </div>
 
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Sekiranya terdapat keperluan mendesak untuk menyokong permohonan walaupun mencatatkan skor yang rendah, sila kemukakan justifikasi.</p>
-                <textarea id="ulasan_kjf" rows="4" placeholder="Ulasan pengurusan dan penutup..."></textarea>
+                <div class="form-group">
+                    <label>Ulasan & Justifikasi Pengurusan</label>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Sekiranya terdapat keperluan mendesak untuk menyokong permohonan walaupun mencatatkan skor yang rendah, sila kemukakan justifikasi.</p>
+                    <textarea id="ulasan_kjf" rows="4" placeholder="Ulasan pengurusan dan penutup..."></textarea>
+                </div>
             </div>
 
             <button type="submit" class="submit-btn" id="btnSubmit">Hantar & Rekod Data Penilaian</button>
@@ -493,7 +591,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('modalPrivasi')">&times;</span>
     <h2 style="color:var(--brand-navy); margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom:10px;">Dasar Privasi Data</h2>
-    <p style="font-size:0.95rem; line-height:1.7;">Semua maklumat kerahsiaan pegawai (No. KP, demografi, data kesihatan keluarga) dikodkan dan disimpan dalam pelayan awan Google Workspace KKM yang disulitkan. Akses bacaan eksklusif hanya untuk urusetia Mesyuarat Pertukaran JKNP.</p>
+    <p style="font-size:0.95rem; line-height:1.7;">Semua maklumat kerahsiaan pegawai (No. KP, demografi, data kesihatan keluarga) dan pengesahan identiti penilai dikodkan dan disimpan dalam pelayan awan Google Workspace KKM yang disulitkan. Akses bacaan eksklusif hanya untuk urusetia Mesyuarat Pertukaran JKNP.</p>
   </div>
 </div>
 
@@ -501,12 +599,11 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('modalTerma')">&times;</span>
     <h2 style="color:var(--brand-navy); margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom:10px;">Terma Penggunaan</h2>
-    <p style="font-size:0.95rem; line-height:1.7;">Platform ini adalah hak milik kerajaan bersandarkan kelulusan NMRR (NMRR ID-26-03968-MPU). Manipulasi markah tanpa justifikasi dokumen sokongan fizikal yang sah merupakan pelanggaran integriti pengurusan HR.</p>
+    <p style="font-size:0.95rem; line-height:1.7;">Platform ini adalah hak milik kerajaan bersandarkan kelulusan NMRR (NMRR ID-26-03968-MPU). Hanya pegawai yang disahkan melalui akaun rasmi <strong>@moh.gov.my</strong> dibenarkan memperakukan borang ini. Manipulasi markah merupakan pelanggaran integriti pengurusan tatatertib perkhidmatan awam.</p>
   </div>
 </div>
 
 <script>
-    // GANTIKAN URL DI BAWAH JIKA WEB APP BARU DIJANA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzw2jFzKF-aRmEDxt-5J4jF39_9RbJlqXP0EdzLdosmuBJslOi6eeNaW1zOjqExvY66fw/exec';
 
     function toggleInput(id, show) { document.getElementById(id).style.display = show ? 'block' : 'none'; }
@@ -574,32 +671,34 @@
         if (window.Jarak) Jarak.enhance(type);
     }
 
+    // Skala Pemarkahan: P7 & P8 hanya 1, 3, 5 manakala P9 hanya 1, 3, 4, 5
     const paramData = [
-        { id: 'p1', title: 'P1: Alasan Pertukaran', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / kesihatan</td></tr>` },
-        { id: 'p2', title: 'P2: Tempoh di Fasiliti Semasa', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` },
-        { id: 'p3', title: 'P3: Beban Logistik & Jarak', ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Pedalaman/Berbukit</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>>300km / Antara negeri</td><td>151km - 300km</td></tr>` },
-        { id: 'p4', title: 'P4: Tanggungan Anak (Kuantiti)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Seorang anak</td></tr><tr><td>3</td><td>2 orang anak</td></tr><tr><td>4</td><td>3 orang anak</td></tr><tr><td>5</td><td>≥ 4 orang anak</td></tr>` },
-        { id: 'p5', title: 'P5: Tanggungan Anak (Umur)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Anak sekolah menengah</td></tr><tr><td>3</td><td>Pelbagai peringkat (menengah & rendah)</td></tr><tr><td>4</td><td>Anak kecil (bayi/pra-sekolah/rendah)</td></tr><tr><td>5</td><td>Anak berkeperluan khas (OKU)</td></tr>` },
-        { id: 'p6', title: 'P6: Tanggungan Lain (Pasangan / Ibu Bapa)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada keperluan penjagaan</td></tr><tr><td>2</td><td>Menjaga (Sihat tetapi perlu pemantauan)</td></tr><tr><td>3</td><td>Menjaga (Penyakit kronik terkawal)</td></tr><tr><td>4</td><td>Menjaga uzur (Pergerakan terhad)</td></tr><tr><td>5</td><td>Menjaga uzur (Terlantar/ kritikal)</td></tr>` },
-        { id: 'p7', title: 'P7: Implikasi (Tanpa Pengganti)', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Keperluan kritikal mobilisasi, jejas operasi</td></tr><tr><td>3</td><td>Perlu pelarasan tugas berkala</td></tr><tr><td>5</td><td>Beban kerja boleh diserap staf sedia ada</td></tr>` },
-        { id: 'p8', title: 'P8: Kelangsungan Perkhidmatan', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Terpaksa tutup perkhidmatan (Cth: MTAC)</td></tr><tr><td>3</td><td>Skop dihadkan / Tugas pentadbiran tertangguh</td></tr><tr><td>5</td><td>Perkhidmatan teras diteruskan seperti biasa</td></tr>` },
-        { id: 'p9', title: 'P9: Perakuan Pengurusan', ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tidak disokong atas keperluan perkhidmatan</td></tr><tr><td>3</td><td>Disokong dengan pengganti serentak</td></tr><tr><td>4</td><td>Disokong dengan pengganti kemudian</td></tr><tr><td>5</td><td>Disokong tanpa keperluan pengganti</td></tr>` }
+        { id: 'p1', title: 'P1: Alasan Pertukaran', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada alasan mendesak</td></tr><tr><td>2</td><td>Kemajuan kerjaya</td></tr><tr><td>3</td><td>Menjaga ibu/bapa sakit/uzur</td></tr><tr><td>4</td><td>Mengikut pasangan (PJJ)</td></tr><tr><td>5</td><td>Ancaman keselamatan / gangguan / kesihatan</td></tr>` },
+        { id: 'p2', title: 'P2: Tempoh di Fasiliti Semasa', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>< 2 tahun</td></tr><tr><td>2</td><td>2 - 3 tahun</td></tr><tr><td>3</td><td>4 - 5 tahun</td></tr><tr><td>4</td><td>6 - 8 tahun</td></tr><tr><td>5</td><td>> 8 tahun</td></tr>` },
+        { id: 'p3', title: 'P3: Beban Logistik & Jarak', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Laluan Biasa</th><th>Laluan Pedalaman/Berbukit</th></tr><tr><td>1</td><td>Bawah 30 km / Bujang</td><td>-</td></tr><tr><td>2</td><td>31km - 70km</td><td>Bawah 30 km</td></tr><tr><td>3</td><td>71km - 150km</td><td>31km - 70km</td></tr><tr><td>4</td><td>151km - 300km</td><td>71km - 150km</td></tr><tr><td>5</td><td>>300km / Antara negeri</td><td>151km - 300km</td></tr>` },
+        { id: 'p4', title: 'P4: Tanggungan Anak (Kuantiti)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Seorang anak</td></tr><tr><td>3</td><td>2 orang anak</td></tr><tr><td>4</td><td>3 orang anak</td></tr><tr><td>5</td><td>≥ 4 orang anak</td></tr>` },
+        { id: 'p5', title: 'P5: Tanggungan Anak (Umur)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada anak / Bujang</td></tr><tr><td>2</td><td>Anak sekolah menengah</td></tr><tr><td>3</td><td>Pelbagai peringkat (menengah & rendah)</td></tr><tr><td>4</td><td>Anak kecil (bayi/pra-sekolah/rendah)</td></tr><tr><td>5</td><td>Anak berkeperluan khas (OKU)</td></tr>` },
+        { id: 'p6', title: 'P6: Tanggungan Lain (Pasangan / Ibu Bapa)', scale: [1, 2, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tiada keperluan penjagaan</td></tr><tr><td>2</td><td>Menjaga (Sihat tetapi perlu pemantauan)</td></tr><tr><td>3</td><td>Menjaga (Penyakit kronik terkawal)</td></tr><tr><td>4</td><td>Menjaga uzur (Pergerakan terhad)</td></tr><tr><td>5</td><td>Menjaga uzur (Terlantar/ kritikal)</td></tr>` },
+        { id: 'p7', title: 'P7: Implikasi (Tanpa Pengganti)', scale: [1, 3, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Keperluan kritikal mobilisasi, jejas operasi</td></tr><tr><td>3</td><td>Perlu pelarasan tugas berkala</td></tr><tr><td>5</td><td>Beban kerja boleh diserap staf sedia ada</td></tr>` },
+        { id: 'p8', title: 'P8: Kelangsungan Perkhidmatan', scale: [1, 3, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Terpaksa tutup perkhidmatan (Cth: MTAC)</td></tr><tr><td>3</td><td>Skop dihadkan / Tugas pentadbiran tertangguh</td></tr><tr><td>5</td><td>Perkhidmatan teras diteruskan seperti biasa</td></tr>` },
+        { id: 'p9', title: 'P9: Perakuan Pengurusan', scale: [1, 3, 4, 5], ref: `<tr><th>Skor</th><th>Kriteria Penilaian</th></tr><tr><td>1</td><td>Tidak disokong atas keperluan perkhidmatan</td></tr><tr><td>3</td><td>Disokong dengan pengganti serentak</td></tr><tr><td>4</td><td>Disokong dengan pengganti kemudian</td></tr><tr><td>5</td><td>Disokong tanpa keperluan pengganti</td></tr>` }
     ];
 
     const scoreContainer = document.getElementById('scoringContainer');
     paramData.forEach(p => {
         let likert = '';
-        for(let i=1; i<=5; i++) {
+        p.scale.forEach(val => {
             likert += `<label class="likert-option">
-                <input type="radio" name="${p.id}_score" value="${i}" required class="score-input">
-                <div class="likert-tile">${i}</div>
+                <input type="radio" name="${p.id}_score" value="${val}" required class="score-input">
+                <div class="likert-tile">${val}</div>
             </label>`;
-        }
+        });
         scoreContainer.innerHTML += `
             <div class="card">
                 <div class="card-title">${p.title}</div>
                 <div class="table-responsive"><table class="ref-table">${p.ref}</table></div>
-                ${p.id === 'p3' ? '<div id="p3Hint" class="p3-hint"></div>' : ''}<div class="likert-wrapper">${likert}</div>
+                ${p.id === 'p3' ? '<div id="p3Hint" class="p3-hint"></div>' : ''}
+                <div class="likert-wrapper" style="grid-template-columns: repeat(${p.scale.length}, 1fr);">${likert}</div>
             </div>`;
     });
 
@@ -622,17 +721,69 @@
         }
     });
 
+    // PENGENDALIAN GOOGLE IDENTITY SERVICES (SSO)
+    function parseJwt(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    function handleCredentialResponse(response) {
+        var payload = parseJwt(response.credential);
+        var email = (payload.email || '').toLowerCase();
+
+        if (!email.endsWith('@moh.gov.my')) {
+            alert("Akses Ditolak: Sila gunakan akaun e-mel rasmi Kementerian Kesihatan Malaysia (@moh.gov.my).");
+            return;
+        }
+
+        document.getElementById('email_penilai').value = email;
+        document.getElementById('user_display_name').innerText = payload.name;
+        document.getElementById('user_display_email').innerText = email;
+
+        var inputNamaPenilai = document.getElementById('nama_penilai');
+        if(!inputNamaPenilai.value) {
+            inputNamaPenilai.value = payload.name;
+        }
+
+        document.getElementById('g_id_signin_container').style.display = 'none';
+        document.getElementById('user_profile_box').style.display = 'flex';
+        showToast('Identiti disahkan: ' + email, 'success');
+    }
+
+    function logoutGoogle() {
+        document.getElementById('email_penilai').value = '';
+        document.getElementById('g_id_signin_container').style.display = 'block';
+        document.getElementById('user_profile_box').style.display = 'none';
+        showToast('Log keluar berjaya.', 'info');
+    }
+
+    // PENGHANTARAN BORANG
     document.getElementById('operasiForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        const emailVerified = document.getElementById('email_penilai').value;
+        if (!emailVerified) {
+            showToast('Sila sahkan identiti anda melalui Google Sign-In KKM di Seksyen 4 terlebih dahulu.', 'error');
+            document.getElementById('g_id_signin_container').scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
         const btn = document.getElementById('btnSubmit');
         btn.innerText = 'Menjana PDF & E-mel...';
         btn.style.opacity = '0.7';
 
         let total = 0; let scores = {};
         for(let i=1; i<=9; i++) {
-            let val = parseInt(document.querySelector(`input[name="p${i}_score"]:checked`).value);
-            scores[`p${i}`] = val;
-            total += val;
+            let el = document.querySelector(`input[name="p${i}_score"]:checked`);
+            if (el) {
+                let val = parseInt(el.value);
+                scores[`p${i}`] = val;
+                total += val;
+            }
         }
 
         let tata = document.querySelector('input[name="tatatertib_status"]:checked').value;
@@ -647,14 +798,23 @@
 
         let payload = {
             action: 'create',
-            emailPenilai: document.getElementById('email_penilai').value,
-            nama: document.getElementById('nama').value, kp: document.getElementById('kp').value, gred: document.getElementById('gred').value,
+            emailPenilai: emailVerified,
+            namaPenilai: document.getElementById('nama_penilai').value,
+            jawatanPenilai: document.getElementById('jawatan_penilai').value,
+            ptjPenilai: document.getElementById('ptj_penilai').value,
+            nama: document.getElementById('nama').value, 
+            kp: document.getElementById('kp').value, 
+            gred: document.getElementById('gred').value,
             ptjSemasa: document.getElementById('ptjSemasa').value,
             fasilitiSemasa: document.getElementById('val_fasilitiSemasa') ? document.getElementById('val_fasilitiSemasa').value : document.getElementById('ptjSemasa').value,
             ptjDiminta: document.getElementById('ptjDiminta').value,
             fasilitiDiminta: document.getElementById('val_fasilitiDiminta') ? document.getElementById('val_fasilitiDiminta').value : document.getElementById('ptjDiminta').value,
-            scores: scores, totalScore: total,
-            tatatertib: tata, latihBaru: latih, dokumen: docs.join(', '), ulasan: document.getElementById('ulasan_kjf').value,
+            scores: scores, 
+            totalScore: total,
+            tatatertib: tata, 
+            latihBaru: latih, 
+            dokumen: docs.join(', '), 
+            ulasan: document.getElementById('ulasan_kjf').value,
             ...(window.Jarak ? Jarak.payloadFields() : {})
         };
 
@@ -662,8 +822,9 @@
         .then(res => res.json())
         .then(data => {
             if(data.result === 'success') {
-                showToast(`Selesai! ID Rujukan: ${data.id}. Salinan PDF dihantar ke e-mel.`, 'success');
+                showToast(`Selesai! ID Rujukan: ${data.id}. Salinan PDF dihantar ke ${emailVerified}.`, 'success');
                 this.reset();
+                logoutGoogle();
                 if (window.Jarak) Jarak.reset();
                 document.getElementById('scoreTrackerBox').style.display = 'none';
                 document.getElementById('wrap_fasilitiSemasa').style.display = 'none';
